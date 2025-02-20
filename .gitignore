@@ -1,4 +1,9 @@
 *.out
 *.idea
+*.cmake
+build
+*.a
+Makefile
+*/CMakeFiles
 cmake-build-debug
 
