@@ -16,13 +16,23 @@ public:
 
     bool isEof();
     char readNext();
+
+    // returns current character and move to next
+    // character of text being read
     char consume();
+
+    // if current character matches c, consume it
     bool match(char c);
+
 	bool isAlpha(char c);
 	bool isDigit(char c);
     void addToken(TokenType type, std::string literal, unsigned int lineno);
     void addToken(TokenType type, unsigned int lineno);
+
+    // within each turn of the loop in this function,
+    // we try to scan a single token
     void scanToken();
+
 	void lex();
 	void printTokenList();
 
@@ -31,4 +41,19 @@ private:
     unsigned int start_idx = 0;
     unsigned int current_idx = 0;
     unsigned int line = 1;
+
+    // scans if symbol is / and ignores if it's comment(//)
+    void scan_slash();
+
+    // scans if token is < or <=
+    void scan_less_than();
+
+    // scans if token is > or >=
+    void scan_more_than();
+
+    // scans if token is = or ==
+    void scan_equal();
+
+    // scans if token is ! or !=
+    void scan_not();
 };

@@ -1,34 +1,42 @@
 #pragma once
 
 enum class TokenType {
-    var_decl,
-    func_decl,
+    // keyword
+    var_kw,
+    func_kw,
+    if_kw,
+    elif_kw,
+    else_kw,
+    for_kw,
+    true_kw,
+    false_kw,
+
+    //
     identifier,
-    equal_assignment, // =
-    numeric,
-    open_paren,
+    int_numeric,
+    decimal_numeric,
+    string_lit,
+    nil,
+
+    // single character lexeme
     comma,
+    open_paren,
     close_paren,
     open_curly,
     close_curly,
-    conditional_if,
-    conditional_elif,
-    conditional_else,
-    for_loop,
     plus,
     minus,
     mul,
+    semicolon,
+
+    //
     div,
     less_than,
-    more_than,
     less_than_equal,
+    more_than,
     more_than_equal,
+    equal_assignment, // =
     equal_comparison, // ==
-    semicolon,
-    bool_true_dtype,
-    bool_false_dtype,
-    int_dtype,
-    dec_dtype,
-    string_dtype,
-    nil_dtype
+    not_operator,
+    not_equal_comparison
 };
