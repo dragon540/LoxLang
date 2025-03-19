@@ -38,5 +38,8 @@ enum class TokenType {
     equal_assignment, // =
     equal_comparison, // ==
     not_operator,
-    not_equal_comparison
+    not_equal_comparison,
+
+    // end-of-file
+    eof
 };

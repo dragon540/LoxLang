@@ -56,4 +56,8 @@ private:
 
     // scans if token is ! or !=
     void scan_not();
+
+    void scan_literal(std::string literal);
+
+    void scan_kw_and_identifier(std::string literal);
 };

@@ -24,6 +24,10 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 add_subdirectory(lib)
 
 add_executable(LoxLang main.cpp
-    include/TokenType.h)
+    include/Lexer.h
+    include/TokenType.h
+    include/Token.h
+    include/Node.h
+    include/Parser.h)
 
 target_link_libraries(LoxLang PUBLIC LoxLangLib ${LLVM_LIBS})

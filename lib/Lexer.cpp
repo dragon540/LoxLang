@@ -97,7 +97,7 @@ void Lexer::scanToken() {
         break;
 
         case '/':
-            //scan_slash();
+            scan_slash();
         break;
         case '<':
             scan_less_than();
@@ -112,6 +112,40 @@ void Lexer::scanToken() {
         case '!':
             scan_not();
         break;
+
+        case '_':
+        case 'a':
+        case 'b':
+        case 'c':
+        case 'd':
+        case 'e':
+        case 'f':
+        case 'g':
+        case 'h':
+        case 'i':
+        case 'j':
+        case 'k':
+        case 'l':
+        case 'm':
+        case 'n':
+        case 'o':
+        case 'p':
+        case 'q':
+        case 'r':
+        case 's':
+        case 't':
+        case 'u':
+        case 'v':
+        case 'w':
+        case 'x':
+        case 'y':
+        case 'z':
+    {
+            std::string literal = "";
+            literal += c;
+            scan_literal(literal);
+        break;
+    }
 
         case ' ':
         case '\t':
@@ -143,20 +177,17 @@ void Lexer::printTokenList() {
     }
 }
 
-/**
 void Lexer::scan_slash() {
     if(match('/')) {
-        // ignore till endline is not consumed
-        while(!match('\n')) {
+        // ignore till endline or eof is reached
+        while( (src_[current_idx] != '\n') && !isEof() ) {
             consume();
         }
-        consume();
     }
     else {
         addToken(TokenType::div, line);
     }
 }
-**/
 
 void Lexer::scan_less_than() {
     if(match('=')) {
@@ -191,5 +222,44 @@ void Lexer::scan_not() {
     }
     else {
         addToken(TokenType::not_operator, line);
+    }
+}
+
+void Lexer::scan_literal(std::string literal) {
+    //start_idx = current_idx - 1;
+    while( isAlpha(readNext()) ) {
+        literal += consume();
+    }
+    literal += consume();
+    scan_kw_and_identifier(literal);
+}
+
+void Lexer::scan_kw_and_identifier(std::string literal) {
+    if(literal == "var") {
+        addToken(TokenType::var_kw, line);
+    }
+    else if(literal == "func") {
+        addToken(TokenType::func_kw, line);
+    }
+    else if(literal == "if") {
+        addToken(TokenType::if_kw, line);
+    }
+    else if(literal == "elif") {
+        addToken(TokenType::elif_kw, line);
+    }
+    else if(literal == "else") {
+        addToken(TokenType::else_kw, line);
+    }
+    else if(literal == "for") {
+        addToken(TokenType::for_kw, line);
+    }
+    else if(literal == "true") {
+        addToken(TokenType::true_kw, line);
+    }
+    else if(literal == "false") {
+        addToken(TokenType::false_kw, line);
+    }
+    else {
+        addToken(TokenType::identifier, literal, line);
     }
 }

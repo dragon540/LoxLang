@@ -9,3 +9,20 @@
 ``` $ cd build```
 
 ``` $ cmake --build .```
+
+## First draft grammar
+
+1. Expression -> Literal
+                | Unary
+                | Binary
+                | Grouping
+                
+2. Literal -> NUMBER | STRING | "true" | "false" | "nil" ;
+
+3. Grouping -> "(" Expression ")" ;
+
+4. Unary -> ( "-" | "!" ) Expression ;
+
+5. Binary -> Expression Operator Expression ;
+
+6. Operator -> "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" ;
