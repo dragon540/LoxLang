@@ -7,6 +7,10 @@ Lexer::Lexer(llvm::StringRef & src) : src_(src) {
 
 }
 
+std::vector<Token> Lexer::return_token_list() {
+    return token_list;
+}
+
 bool Lexer::isEof() {
     if(current_idx < src_.size()) {
           return false;
@@ -111,6 +115,9 @@ void Lexer::scanToken() {
         break;
         case '!':
             scan_not();
+        break;
+        case '"':
+            scan_quote();
         break;
 
         case '_':
@@ -222,6 +229,20 @@ void Lexer::scan_not() {
     }
     else {
         addToken(TokenType::not_operator, line);
+    }
+}
+
+void Lexer::scan_quote() {
+    std::string literal = "";
+    while( isAlpha(readNext()) ) {
+        literal += consume();
+    }
+    literal += consume();
+    if(match('"')) {
+        addToken(TokenType::string_lit, literal, line);
+    }
+    else {
+        std::cout << "expected \" missing" << std::endl;
     }
 }
 

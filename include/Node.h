@@ -2,64 +2,82 @@
 
 #include "Token.h"
 #include "TokenType.h"
+#include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/Module.h"
 
 #include <string>
 
-class ASTNode {
+using namespace llvm;
+
+class ExprNode {
 public:
-    ASTNode();
+    ExprNode() {}
+    virtual ~ExprNode() = default;
+    virtual Value *codegen() = 0;
 };
 
-class NumberNode : public ASTNode {
+class NumberNode : public ExprNode {
 public:
     NumberNode(int value) :
         value_(value) {}
-
+    Value *codegen() override;
     int value_;
 };
 
-class StringNode : public ASTNode {
+class StringNode : public ExprNode {
 public:
     StringNode(std::string value) :
         value_(value) {}
 
+    Value *codegen() override;
     std::string value_;
 };
 
-class Expr : public ASTNode {
+class LiteralNode : public ExprNode {
 public:
-    Expr();
+    LiteralNode(ExprNode *node) :
+        node(node) {}
+
+    Value *codegen() override;
+    ExprNode *node;
 };
 
-class Literal : public Expr {
+class IdentifierNode : public ExprNode {
 public:
-    Token *val_;
-    Literal();
+    IdentifierNode(std::string value) :
+        value_(value) {}
+
+    Value *codegen() override;
+    std::string value_;
 };
 
-class Unary : public Expr {
+class UnaryNode : public ExprNode {
 public:
-    Unary(TokenType symbol, Expr* expr) :
+    UnaryNode(TokenType symbol, ExprNode* expr) :
         symbol_(symbol), expr_(expr) {}
 
+    Value *codegen() override;
     TokenType symbol_;
-    Expr *expr_;
+    ExprNode *expr_;
 };
 
-class Binary : public Expr {
+class BinaryNode : public ExprNode {
 public:
-    /**Binary(Expr* left, Expr* right, TokenType op_) :
+    BinaryNode(ExprNode* left, ExprNode* right, TokenType op) :
         left_(left), right_(right), op_(op) {}
-**/
-    Expr *left_;
-    Expr *right_;
+
+    Value *codegen() override;
+    ExprNode *left_;
+    ExprNode *right_;
     TokenType op_;
 };
 
-class Grouping : public Expr {
+class GroupingNode : public ExprNode {
 public:
-    Grouping(Expr *expr) :
+    GroupingNode(ExprNode *expr) :
         expr_(expr) {}
 
-    Expr *expr_;
+    Value *codegen() override;
+    ExprNode *expr_;
 };

@@ -14,6 +14,8 @@ public:
 	Lexer(llvm::StringRef & src);
 	std::vector<Token> token_list;
 
+    std::vector<Token> return_token_list();
+
     bool isEof();
     char readNext();
 
@@ -56,6 +58,9 @@ private:
 
     // scans if token is ! or !=
     void scan_not();
+
+    // scans if token is "
+    void scan_quote();
 
     void scan_literal(std::string literal);
 

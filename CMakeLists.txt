@@ -28,6 +28,8 @@ add_executable(LoxLang main.cpp
     include/TokenType.h
     include/Token.h
     include/Node.h
-    include/Parser.h)
+    include/Parser.h
+    include/NodePrinter.h
+    include/Driver.h)
 
 target_link_libraries(LoxLang PUBLIC LoxLangLib ${LLVM_LIBS})

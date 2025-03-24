@@ -1,16 +1,19 @@
 #pragma once
 
 #include <vector>
+#include <string>
 
 #include "Lexer.h"
 #include "Token.h"
 #include "TokenType.h"
 #include "Node.h"
+#include "NodePrinter.h"
 
 
 class Parser {
 public:
     Parser(std::vector<Token> tokens);
+    ExprNode *root;
     void parse();
 
 private:
@@ -24,10 +27,13 @@ private:
 
     void parseToken();
 
-    void parse_expr_();
-    void parse_literal_();
-    void parse_unary_();
-    void parse_binary_();
-    void parse_grouping_();
+    ExprNode* parse_expr_();
+    UnaryNode* parse_unary_();
+    BinaryNode* parse_binary_();
+    GroupingNode* parse_grouping_();
     void parse_operator_();
+    NumberNode* parse_number_(int num);
+    StringNode* parse_string(std::string str);
+    IdentifierNode* parse_identifier(std::string str);
+    LiteralNode* parse_literal(ExprNode* node);
 };

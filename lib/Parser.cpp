@@ -1,6 +1,8 @@
 #include "Parser.h"
 
-/***
+#include "Driver.h"
+
+
 Parser::Parser(std::vector<Token> tokens)
     :tokens_(tokens) {}
 
@@ -26,25 +28,33 @@ TokenType Parser::peek() {
 }
 
 void Parser::parse() {
-    while(!isAtEnd()) {
-        parseToken();
-    }
+    ExprNode* exprNode;
+    exprNode = parse_expr_();
+    std::cout << exprNode << std::endl;
+
+    NodePrinter np;
+    np.printExpr(exprNode);
+
+    GenerateCode(exprNode);
+
 }
 
+/**
 void Parser::parseToken() {
     parse_expr_();
 }
+**/
 
-void Parser::parse_expr_() {
+ExprNode* Parser::parse_expr_() {
     Token tok = consume();
+    ExprNode* result = nullptr;
     switch(tok.type_) {
         // Literal
         case TokenType::int_numeric:
-            NumberNode(tok.value_);
+            result = parse_number_(stoi(tok.value_));
         break;
-        //case TokenType::decimal_numeric:
         case TokenType::string_lit:
-            StringNode(tok.value_);
+            result = parse_string(tok.value_);
         break;
         case TokenType::true_kw:
         case TokenType::false_kw:
@@ -53,27 +63,57 @@ void Parser::parse_expr_() {
 
         // Unary
         case TokenType::minus:
-            ASTNode *node = new parse_expr_();
-            Unary(TokenType::minus, node);
+    {
+            ExprNode *node = parse_expr_();
+            result = new UnaryNode(TokenType::minus, node);
+    }
         break;
         case TokenType::not_operator:
-            ASTNode *node = new parse_expr_();
-            Unary(TokenType::not_operator, node);
+    {
+            ExprNode *node = parse_expr_();
+            result = new UnaryNode(TokenType::not_operator, node);
+    }
         break;
 
         // Grouping
         case TokenType::open_paren:
-            ASTNode *node = new parse_expr_();
-            Grouping(node);
+    {
+            ExprNode *node = parse_expr_();
+            Token next_tok = consume();
+            if(next_tok.type_ != TokenType::close_paren) {
+                std::cout << "Missing )\n";
+                break;
+            }
+            result = new GroupingNode(node);
+    }
         break;
 
         case TokenType::close_paren:
-            continue;
+            //continue;
         break;
 
-
-
         // Binary
+
     }
+    return result;
 }
-***/
+
+NumberNode* Parser::parse_number_(int num) {
+    NumberNode* node = new NumberNode(num);
+    return node;
+}
+
+StringNode* Parser::parse_string(std::string str) {
+    StringNode* node = new StringNode(str);
+    return node;
+}
+
+IdentifierNode* Parser::parse_identifier(std::string str) {
+    IdentifierNode* node = new IdentifierNode(str);
+    return node;
+}
+
+LiteralNode* Parser::parse_literal(ExprNode* node) {
+    LiteralNode* literal_node = new LiteralNode(node);
+    return literal_node;
+}
