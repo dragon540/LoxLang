@@ -6,7 +6,7 @@
 #include "llvm/Support/raw_ostream.h"
 
 int main() {
-    llvm::StringRef str2("- \"hello\" ");
+    llvm::StringRef str2(" - \"hhh\" ");
 	Lexer l(str2);
 	l.printTokenList();
     Parser parser(l.return_token_list());

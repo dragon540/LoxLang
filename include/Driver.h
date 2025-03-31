@@ -5,12 +5,18 @@
 #include "llvm/IR/Module.h"
 #include "Node.h"
 
+#include <iostream>
 #include <map>
 
 static std::unique_ptr<LLVMContext> TheContext;
 static std::unique_ptr<Module> TheModule;
 static std::unique_ptr<IRBuilder<>> Builder;
 static std::map<std::string, Value *> NamedValues;
+
+Value* ErrorV(const char *Str) {
+    std::cout << Str << std::endl;
+    return 0;
+}
 
 // generic numeric codegen for all nodes for now to see llvm codegen working
 
@@ -27,16 +33,44 @@ Value* LiteralNode::codegen() {
 }
 
 Value* BinaryNode::codegen() {
-    return ConstantFP::get(*TheContext, APFloat(1.5));
+    Value* Left = left_->codegen();
+    Value* Right = right_->codegen();
+    if(Left != 0 && Right != 0) {
+        switch(op_) {
+        case TokenType::plus:
+            return Builder->CreateFAdd(Left, Right, "addtmp");
+        case TokenType::minus:
+            return Builder->CreateFSub(Left, Right, "subtmp");
+        case TokenType::mul:
+            return Builder->CreateFMul(Left, Right, "multmp");
+
+        default:
+            return ErrorV("Invalid binary operation\n");
+        }
+    }
 }
 
 Value* UnaryNode::codegen() {
     Value *ex = expr_->codegen();
-    return Builder->CreateFMul(ex, ex, "multmp");
+    switch(symbol_) {
+        case TokenType::minus:
+            return Builder->CreateFNeg(ex);
+        case TokenType::not_operator:
+            return Builder->CreateNot(ex);
+
+        default:
+            return ErrorV("Invalid unary expression\n");
+    }
 }
 
 Value* IdentifierNode::codegen() {
-    return ConstantFP::get(*TheContext, APFloat(1.5));
+    Value *V = NamedValues[value_];
+    if(V) {
+        return V;
+    }
+    else {
+        return ErrorV("Unknown variable name");
+    }
 }
 
 Value* GroupingNode::codegen() {

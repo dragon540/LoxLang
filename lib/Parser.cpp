@@ -31,12 +31,13 @@ void Parser::parse() {
     ExprNode* exprNode;
     exprNode = parse_expr_();
     std::cout << exprNode << std::endl;
-
+    std::cout << "bp 1\n";
     NodePrinter np;
     np.printExpr(exprNode);
+    std::cout << "bp 2\n";
 
     GenerateCode(exprNode);
-
+    std::cout << "bp 3\n";
 }
 
 /**
