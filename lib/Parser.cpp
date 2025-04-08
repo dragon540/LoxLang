@@ -52,14 +52,54 @@ void Parser::parseToken() {
 }
 **/
 
-std::list<StmtNode*> Parser::parse() {
-    std::list<StmtNode*> statements;
+std::list<DeclNode*> Parser::parse() {
+    std::list<DeclNode*> declarations;
     while(!isAtEnd()) {
         std::cout << "parser here" << std::endl;
-        statements.push_back(parse_stmt_());
+        declarations.push_back(parse_decl_());
     }
     std::cout << "parsing complete" << std::endl;
-    return statements;
+    return declarations;
+}
+
+DeclNode* Parser::parse_decl_() {
+    DeclNode *decl;
+    if(peek() == TokenType::var_kw) {
+        decl = parse_var_decl_();
+    }
+    else {
+        decl = parse_stmt_();
+    }
+    return decl;
+}
+
+VarDeclNode* Parser::parse_var_decl_() {
+    IdentifierNode *iden = nullptr;
+    ExprStmtNode *expr = nullptr;
+    VarDeclNode *varDecl = nullptr;
+
+    if(match(TokenType::var_kw)) {
+        if(peek() == TokenType::identifier) {
+            Token t = consume();
+            iden = parse_identifier(t.value_);
+            if(match(TokenType::equal_assignment)) {
+                expr = parse_expr_stmt_();
+                if(match(TokenType::semicolon)) {
+                    varDecl = new VarDeclNode(iden, expr);
+                }
+                else {
+                    std::cout << "Expected ; after expression" << std::endl;
+                    delete expr;
+                }
+            }
+            else {
+                if(match(TokenType::semicolon)) {
+                    varDecl = new VarDeclNode(iden, 0);
+                }
+            }
+        }
+    }
+    return varDecl;
 }
 
 StmtNode* Parser::parse_stmt_() {

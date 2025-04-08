@@ -10,12 +10,26 @@
 
 using namespace llvm;
 
+class DeclNode {
+public:
+    virtual Value *codegen() = 0;
+};
 
-class StmtNode {
+/**class VarDeclNode : public DeclNode {
+public:
+    VarDeclNode(IdentifierNode *iden, ExprStmtNode *expr) :
+        iden(iden),
+        expr(expr) {}
+
+    IdentifierNode *iden;
+    ExprStmtNode *expr;
+};**/
+
+class StmtNode : public DeclNode {
 public:
     StmtNode() {}
-    virtual ~StmtNode() = default;
     virtual Value *codegen() = 0;
+    virtual ~StmtNode() = default;
 };
 
 class ExprStmtNode : public StmtNode {
@@ -96,4 +110,14 @@ public:
 
     Value *codegen() override;
     ExprStmtNode *expr_;
+};
+
+class VarDeclNode : public DeclNode {
+public:
+    VarDeclNode(IdentifierNode *iden, ExprStmtNode *expr) :
+        iden(iden),
+        expr(expr) {}
+    virtual Value *codegen();
+    IdentifierNode *iden;
+    ExprStmtNode *expr;
 };

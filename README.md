@@ -12,24 +12,30 @@
 
 ## First draft grammar
 
-1. Program -> Statement* EOF
+1. Program ->   Declaration* EOF
 
-2. Statement -> ExprStmt
+2. Declaration -> VarDecl
+                  | Statement
+                  
+3. Statement -> ExprStmt
                 | printStmt
                 
-3. ExprStmt -> Literal
+4. ExprStmt -> Literal
                | Unary
                | Binary
                | Grouping
 
-4. printStmt -> "print" OPEN_PAREN ExprStmt CLOSE_PAREN SEMICOLON  
+5. printStmt -> PRINT OPEN_PAREN ExprStmt CLOSE_PAREN SEMICOLON  
                 
-5. Literal -> NUMBER | STRING | "true" | "false" | "nil" ;
+6. Literal -> NUMBER | STRING | "true" | "false" | "nil" ;
 
-6. Grouping -> "(" ExprStmt ")" ;
+7. Grouping -> "(" ExprStmt ")" ;
 
-7. Unary -> ( "-" | "!" ) ExprStmt ;
+8. Unary -> ( "-" | "!" ) ExprStmt ;
 
-8. Binary -> ExprStmt Operator exprStmt ;
+9. Binary -> ExprStmt Operator exprStmt ;
 
-9. Operator -> "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" ;
+10. Operator -> "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" ;
+
+11. VarDecl -> VAR Identifier SEMICOLON
+               | VAR Identifier EQUAL ExprStmt SEMICOLON

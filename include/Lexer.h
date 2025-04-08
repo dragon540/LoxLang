@@ -64,5 +64,7 @@ private:
 
     void scan_literal(std::string literal);
 
+    void scan_numeric(std::string numeric_literal);
+
     void scan_kw_and_identifier(std::string literal);
 };

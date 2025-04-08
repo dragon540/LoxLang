@@ -19,16 +19,39 @@ Value* ErrorV(const char *Str) {
 }
 
 // generic numeric codegen for all nodes for now to see llvm codegen working
+
+Value* VarDeclNode::codegen() {
+    std::cout << "var decl codegen" << std::endl;
+    std::cout << iden->value_.c_str() << std::endl;
+    if(Builder->GetInsertBlock() == nullptr) {
+        std::cout << "not inside any basic block" << std::endl;
+    }
+    AllocaInst *Alloca = Builder->CreateAlloca(Type::getInt32Ty(*TheContext), nullptr, (iden->value_).c_str());
+    std::cout << "alloca" << std::endl;
+
+    if(expr) {
+        Value *val = expr->codegen();
+        if(!val) {
+            std::cout << "nullptr" << std::endl;
+            return nullptr;
+        }
+        Builder->CreateStore(val, Alloca);
+    }
+
+    NamedValues[iden->value_] = Alloca;
+    return Alloca;
+}
+
 Value* PrintStmtNode::codegen() {
     return ConstantFP::get(*TheContext, APFloat(1.5));
 }
 
 Value* ExprStmtNode::codegen() {
-    return ConstantFP::get(*TheContext, APFloat(1.5));
+    return ConstantInt::get(*TheContext, APInt(32, 53));
 }
 
 Value* NumberNode::codegen() {
-    return ConstantFP::get(*TheContext, APFloat((float)value_));
+    return ConstantInt::get(*TheContext, APInt(32, value_));
 }
 
 Value* StringNode::codegen() {
@@ -59,21 +82,25 @@ Value* BinaryNode::codegen() {
 
 Value* UnaryNode::codegen() {
     Value *ex = expr_->codegen();
-    switch(symbol_) {
-        case TokenType::minus:
-            return Builder->CreateFNeg(ex);
-        case TokenType::not_operator:
-            return Builder->CreateNot(ex);
+    if(ex) {
+        switch(symbol_) {
+            case TokenType::minus:
+                return Builder->CreateFNeg(ex);
+            case TokenType::not_operator:
+                return Builder->CreateNot(ex);
 
-        default:
-            return ErrorV("Invalid unary expression\n");
+            default:
+                return ErrorV("Invalid unary expression\n");
+        }
     }
 }
 
 Value* IdentifierNode::codegen() {
+    std::cout << "ident codegen" << std::endl;
     Value *V = NamedValues[value_];
+    std::cout << "opsdfcd" << std::endl;
     if(V) {
-        return V;
+        return Builder->CreateLoad(Type::getDoubleTy(*TheContext), V, value_.c_str());
     }
     else {
         return ErrorV("Unknown variable name");
@@ -81,19 +108,31 @@ Value* IdentifierNode::codegen() {
 }
 
 Value* GroupingNode::codegen() {
-    return ConstantFP::get(*TheContext, APFloat(1.5));
+    return exprStmt->codegen();
 }
 
-void GenerateCode(StmtNode *Root) {
+void GenerateCode(DeclNode *Root) {
     // Initialize LLVM context and builder
     TheContext = std::make_unique<llvm::LLVMContext>();
     TheModule = std::make_unique<llvm::Module>("my_module", *TheContext);
     Builder = std::make_unique<llvm::IRBuilder<>>(*TheContext);
 
+    // Create a dummy function to hold top-level code
+    FunctionType *funcType = FunctionType::get(Type::getVoidTy(*TheContext), false);
+    Function *mainFunc = Function::Create(funcType, Function::ExternalLinkage, "main", TheModule.get());
+
+    // Create an entry block for the function
+    BasicBlock *entry = BasicBlock::Create(*TheContext, "entry", mainFunc);
+    Builder->SetInsertPoint(entry);
+
+    std::cout << "fhdjsk" << std::endl;
     if (llvm::Value *Val = Root->codegen()) {
         // Print generated IR
         Val->print(llvm::errs());
         llvm::errs() << "\n";
+
+        // Finish off the function with a return void
+        Builder->CreateRetVoid();
     } else {
         fprintf(stderr, "Code generation failed.\n");
     }

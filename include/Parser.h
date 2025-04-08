@@ -16,7 +16,7 @@ public:
     Parser(std::vector<Token> tokens);
     ExprStmtNode *root;
 
-    std::list<StmtNode*> parse();
+    std::list<DeclNode*> parse();
 
 private:
     std::vector<Token> tokens_;
@@ -31,6 +31,8 @@ private:
     void parseToken();
 
     //std::list<StmtNode*> parse();
+    DeclNode* parse_decl_();
+    VarDeclNode* parse_var_decl_();
     StmtNode* parse_stmt_();
     ExprStmtNode* parse_expr_stmt_();
     PrintStmtNode* parse_print_stmt_();

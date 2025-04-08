@@ -153,6 +153,22 @@ void Lexer::scanToken() {
             scan_literal(literal);
         break;
     }
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+        case '0':
+    {
+        std::string numeric_lit = "";
+        numeric_lit += c;
+        scan_numeric(numeric_lit);
+        break;
+    }
 
         case ' ':
         case '\t':
@@ -253,6 +269,14 @@ void Lexer::scan_literal(std::string literal) {
     }
     literal += consume();
     scan_kw_and_identifier(literal);
+}
+
+void Lexer::scan_numeric(std::string numeric_literal) {
+    while( isDigit(readNext()) ) {
+        numeric_literal += consume();
+    }
+    numeric_literal += consume();
+    addToken(TokenType::int_numeric, numeric_literal, line);
 }
 
 void Lexer::scan_kw_and_identifier(std::string literal) {
