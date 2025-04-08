@@ -1,8 +1,5 @@
 #include "Parser.h"
 
-#include "Driver.h"
-
-
 Parser::Parser(std::vector<Token> tokens)
     :tokens_(tokens) {}
 
@@ -27,7 +24,16 @@ TokenType Parser::peek() {
     return TokenType::eof;
 }
 
-void Parser::parse() {
+// consume current token if it matches t
+bool Parser::match(TokenType t) {
+    if(peek() == t) {
+        consume();
+        return true;
+    }
+    return false;
+}
+
+/**void Parser::parse() {
     ExprNode* exprNode;
     exprNode = parse_expr_();
     std::cout << exprNode << std::endl;
@@ -38,7 +44,7 @@ void Parser::parse() {
 
     GenerateCode(exprNode);
     std::cout << "bp 3\n";
-}
+}**/
 
 /**
 void Parser::parseToken() {
@@ -46,9 +52,50 @@ void Parser::parseToken() {
 }
 **/
 
-ExprNode* Parser::parse_expr_() {
+std::list<StmtNode*> Parser::parse() {
+    std::list<StmtNode*> statements;
+    while(!isAtEnd()) {
+        std::cout << "parser here" << std::endl;
+        statements.push_back(parse_stmt_());
+    }
+    std::cout << "parsing complete" << std::endl;
+    return statements;
+}
+
+StmtNode* Parser::parse_stmt_() {
+    if(peek() == TokenType::print_kw) {
+        return parse_print_stmt_();
+    }
+    return parse_expr_stmt_();
+}
+
+PrintStmtNode* Parser::parse_print_stmt_() {
+    PrintStmtNode* print_stmt;
+    if(match(TokenType::print_kw)) {
+        if(match(TokenType::open_paren)) {
+            ExprStmtNode *expr = parse_expr_stmt_();
+            print_stmt = new PrintStmtNode(expr);
+            if(match(TokenType::close_paren)) {
+                if(match(TokenType::semicolon)) {
+                    return print_stmt;
+                }
+                else {
+                    std::cout << "Error: Missing semicolon after )" << std::endl;
+                }
+            }
+            else {
+                std::cout << "Error: Missing ) after expression" << std::endl;
+            }
+        }
+        else {
+            std::cout << "Error: Missing ( after print keyword" << std::endl;
+        }
+    }
+}
+
+ExprStmtNode* Parser::parse_expr_stmt_() {
     Token tok = consume();
-    ExprNode* result = nullptr;
+    ExprStmtNode* result = nullptr;
     switch(tok.type_) {
         // Literal
         case TokenType::int_numeric:
@@ -65,13 +112,13 @@ ExprNode* Parser::parse_expr_() {
         // Unary
         case TokenType::minus:
     {
-            ExprNode *node = parse_expr_();
+            ExprStmtNode *node = parse_expr_stmt_();
             result = new UnaryNode(TokenType::minus, node);
     }
         break;
         case TokenType::not_operator:
     {
-            ExprNode *node = parse_expr_();
+            ExprStmtNode *node = parse_expr_stmt_();
             result = new UnaryNode(TokenType::not_operator, node);
     }
         break;
@@ -79,7 +126,7 @@ ExprNode* Parser::parse_expr_() {
         // Grouping
         case TokenType::open_paren:
     {
-            ExprNode *node = parse_expr_();
+            ExprStmtNode *node = parse_expr_stmt_();
             Token next_tok = consume();
             if(next_tok.type_ != TokenType::close_paren) {
                 std::cout << "Missing )\n";
@@ -114,7 +161,7 @@ IdentifierNode* Parser::parse_identifier(std::string str) {
     return node;
 }
 
-LiteralNode* Parser::parse_literal(ExprNode* node) {
+LiteralNode* Parser::parse_literal(ExprStmtNode* node) {
     LiteralNode* literal_node = new LiteralNode(node);
     return literal_node;
 }

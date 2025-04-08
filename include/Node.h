@@ -10,14 +10,30 @@
 
 using namespace llvm;
 
-class ExprNode {
+
+class StmtNode {
 public:
-    ExprNode() {}
-    virtual ~ExprNode() = default;
+    StmtNode() {}
+    virtual ~StmtNode() = default;
     virtual Value *codegen() = 0;
 };
 
-class NumberNode : public ExprNode {
+class ExprStmtNode : public StmtNode {
+public:
+    ExprStmtNode() {}
+    virtual Value *codegen() override;
+    ExprStmtNode *exprStmt;
+};
+
+class PrintStmtNode : public StmtNode {
+public:
+    PrintStmtNode(ExprStmtNode *expr) :
+        exprStmt(expr) {}
+    virtual Value *codegen() override;
+    ExprStmtNode *exprStmt;
+};
+
+class NumberNode : public ExprStmtNode {
 public:
     NumberNode(int value) :
         value_(value) {}
@@ -25,7 +41,7 @@ public:
     int value_;
 };
 
-class StringNode : public ExprNode {
+class StringNode : public ExprStmtNode {
 public:
     StringNode(std::string value) :
         value_(value) {}
@@ -34,16 +50,16 @@ public:
     std::string value_;
 };
 
-class LiteralNode : public ExprNode {
+class LiteralNode : public ExprStmtNode {
 public:
-    LiteralNode(ExprNode *node) :
+    LiteralNode(ExprStmtNode *node) :
         node(node) {}
 
     Value *codegen() override;
-    ExprNode *node;
+    ExprStmtNode *node;
 };
 
-class IdentifierNode : public ExprNode {
+class IdentifierNode : public ExprStmtNode {
 public:
     IdentifierNode(std::string value) :
         value_(value) {}
@@ -52,32 +68,32 @@ public:
     std::string value_;
 };
 
-class UnaryNode : public ExprNode {
+class UnaryNode : public ExprStmtNode {
 public:
-    UnaryNode(TokenType symbol, ExprNode* expr) :
+    UnaryNode(TokenType symbol, ExprStmtNode* expr) :
         symbol_(symbol), expr_(expr) {}
 
     Value *codegen() override;
     TokenType symbol_;
-    ExprNode *expr_;
+    ExprStmtNode *expr_;
 };
 
-class BinaryNode : public ExprNode {
+class BinaryNode : public ExprStmtNode {
 public:
-    BinaryNode(ExprNode* left, ExprNode* right, TokenType op) :
+    BinaryNode(ExprStmtNode* left, ExprStmtNode* right, TokenType op) :
         left_(left), right_(right), op_(op) {}
 
     Value *codegen() override;
-    ExprNode *left_;
-    ExprNode *right_;
+    ExprStmtNode *left_;
+    ExprStmtNode *right_;
     TokenType op_;
 };
 
-class GroupingNode : public ExprNode {
+class GroupingNode : public ExprStmtNode {
 public:
-    GroupingNode(ExprNode *expr) :
+    GroupingNode(ExprStmtNode *expr) :
         expr_(expr) {}
 
     Value *codegen() override;
-    ExprNode *expr_;
+    ExprStmtNode *expr_;
 };

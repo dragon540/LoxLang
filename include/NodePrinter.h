@@ -6,7 +6,7 @@
 
 class NodePrinter {
 public:
-    void printExpr(ExprNode *node);
+    void printExpr(ExprStmtNode *node);
     void printUnary(UnaryNode *node);
     void printBinary(BinaryNode *node);
     void printNumber(NumberNode *node);

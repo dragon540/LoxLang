@@ -12,17 +12,24 @@
 
 ## First draft grammar
 
-1. Expression -> Literal
-                | Unary
-                | Binary
-                | Grouping
+1. Program -> Statement* EOF
+
+2. Statement -> ExprStmt
+                | printStmt
                 
-2. Literal -> NUMBER | STRING | "true" | "false" | "nil" ;
+3. ExprStmt -> Literal
+               | Unary
+               | Binary
+               | Grouping
 
-3. Grouping -> "(" Expression ")" ;
+4. printStmt -> "print" OPEN_PAREN ExprStmt CLOSE_PAREN SEMICOLON  
+                
+5. Literal -> NUMBER | STRING | "true" | "false" | "nil" ;
 
-4. Unary -> ( "-" | "!" ) Expression ;
+6. Grouping -> "(" ExprStmt ")" ;
 
-5. Binary -> Expression Operator Expression ;
+7. Unary -> ( "-" | "!" ) ExprStmt ;
 
-6. Operator -> "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" ;
+8. Binary -> ExprStmt Operator exprStmt ;
+
+9. Operator -> "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" ;

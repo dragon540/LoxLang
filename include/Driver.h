@@ -19,6 +19,13 @@ Value* ErrorV(const char *Str) {
 }
 
 // generic numeric codegen for all nodes for now to see llvm codegen working
+Value* PrintStmtNode::codegen() {
+    return ConstantFP::get(*TheContext, APFloat(1.5));
+}
+
+Value* ExprStmtNode::codegen() {
+    return ConstantFP::get(*TheContext, APFloat(1.5));
+}
 
 Value* NumberNode::codegen() {
     return ConstantFP::get(*TheContext, APFloat((float)value_));
@@ -77,7 +84,7 @@ Value* GroupingNode::codegen() {
     return ConstantFP::get(*TheContext, APFloat(1.5));
 }
 
-void GenerateCode(ExprNode *Root) {
+void GenerateCode(StmtNode *Root) {
     // Initialize LLVM context and builder
     TheContext = std::make_unique<llvm::LLVMContext>();
     TheModule = std::make_unique<llvm::Module>("my_module", *TheContext);

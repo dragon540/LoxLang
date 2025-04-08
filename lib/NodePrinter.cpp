@@ -1,6 +1,6 @@
 #include "NodePrinter.h"
 
-void NodePrinter::printExpr(ExprNode *node) {
+void NodePrinter::printExpr(ExprStmtNode *node) {
         if (auto str = dynamic_cast<StringNode*>(node)) {
             printString(str);
         } else if(auto iden = dynamic_cast<IdentifierNode*>(node)) {

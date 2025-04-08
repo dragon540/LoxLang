@@ -280,6 +280,9 @@ void Lexer::scan_kw_and_identifier(std::string literal) {
     else if(literal == "false") {
         addToken(TokenType::false_kw, line);
     }
+    else if(literal == "print") {
+        addToken(TokenType::print_kw, line);
+    }
     else {
         addToken(TokenType::identifier, literal, line);
     }

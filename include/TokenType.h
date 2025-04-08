@@ -10,6 +10,7 @@ enum class TokenType {
     for_kw,
     true_kw,
     false_kw,
+    print_kw,
 
     //
     identifier,

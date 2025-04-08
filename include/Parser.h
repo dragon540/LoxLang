@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <list>
 #include <string>
 
 #include "Lexer.h"
@@ -13,8 +14,9 @@
 class Parser {
 public:
     Parser(std::vector<Token> tokens);
-    ExprNode *root;
-    void parse();
+    ExprStmtNode *root;
+
+    std::list<StmtNode*> parse();
 
 private:
     std::vector<Token> tokens_;
@@ -24,10 +26,14 @@ private:
 
     Token consume();
     TokenType peek();
+    bool match(TokenType t);
 
     void parseToken();
 
-    ExprNode* parse_expr_();
+    //std::list<StmtNode*> parse();
+    StmtNode* parse_stmt_();
+    ExprStmtNode* parse_expr_stmt_();
+    PrintStmtNode* parse_print_stmt_();
     UnaryNode* parse_unary_();
     BinaryNode* parse_binary_();
     GroupingNode* parse_grouping_();
@@ -35,5 +41,5 @@ private:
     NumberNode* parse_number_(int num);
     StringNode* parse_string(std::string str);
     IdentifierNode* parse_identifier(std::string str);
-    LiteralNode* parse_literal(ExprNode* node);
+    LiteralNode* parse_literal(ExprStmtNode* node);
 };
