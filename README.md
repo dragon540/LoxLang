@@ -33,7 +33,7 @@
              | Grouping
              
 5. ForStmt -> FOR OPEN_PAREN VarDecl SEMICOLON ExprStmt SEMICOLON 
-              ExprStmt CLOSE_PAREN Statement
+              ExprStmt CLOSE_PAREN Block
          
 6. IfStmt -> IF OPEN_PAREN ExprStmt CLOSE_PAREN Block
            | IF OPEN_PAREN ExprStmt CLOSE_PAREN Block ELSE Block
@@ -64,7 +64,7 @@
 
 13. ClassDecl -> CLASS Identifier OPEN_CURLY Function* CLOSE_CURLY SEMICOLON
 
-14. Function -> Identifier ( );
+14. Function -> Identifier ( ) Block;
               | Identifier ( Parameters ) Block
                 
 15. Parameters -> Identifier
