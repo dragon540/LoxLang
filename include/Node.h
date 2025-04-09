@@ -7,6 +7,7 @@
 #include "llvm/IR/Module.h"
 
 #include <string>
+#include <vector>
 
 using namespace llvm;
 
@@ -36,7 +37,43 @@ class ExprStmtNode : public StmtNode {
 public:
     ExprStmtNode() {}
     virtual Value *codegen() override;
+
     ExprStmtNode *exprStmt;
+};
+
+class BlockNode {
+public:
+    BlockNode() {}
+    virtual Value *codegen();
+    std::vector<StmtNode*> statements;
+};
+
+class IdentifierNode : public ExprStmtNode {
+public:
+    IdentifierNode(std::string value) :
+        value_(value) {}
+
+    Value *codegen() override;
+    std::string value_;
+};
+
+class ParametersNode {
+public:
+    ParametersNode() {}
+    virtual Value *codegen();
+
+    std::vector<IdentifierNode*> identifiers;
+};
+
+class IfStmtNode : public StmtNode {
+public:
+    IfStmtNode() {}
+    virtual Value *codegen() override;
+
+    ExprStmtNode *if_expr;
+    ExprStmtNode *else_expr;
+    BlockNode    *if_block;
+    BlockNode    *else_block;
 };
 
 class PrintStmtNode : public StmtNode {
@@ -44,7 +81,31 @@ public:
     PrintStmtNode(ExprStmtNode *expr) :
         exprStmt(expr) {}
     virtual Value *codegen() override;
+
     ExprStmtNode *exprStmt;
+};
+
+class ReturnStmtNode : public StmtNode {
+public:
+    ReturnStmtNode() {}
+    virtual Value *codegen() override;
+
+    // Grammar
+    // return ;
+    // return ExprStmt ;
+
+    // this flag indicates if return statement returns any expression or not
+    bool return_void;
+    ExprStmtNode *ret_expr;
+};
+
+class WhileStmtNode : public StmtNode {
+public:
+    WhileStmtNode() {}
+    virtual Value *codegen();
+
+    ExprStmtNode *conditional_expr;
+    BlockNode    *loop_block;
 };
 
 class NumberNode : public ExprStmtNode {
@@ -52,6 +113,7 @@ public:
     NumberNode(int value) :
         value_(value) {}
     Value *codegen() override;
+
     int value_;
 };
 
@@ -73,14 +135,7 @@ public:
     ExprStmtNode *node;
 };
 
-class IdentifierNode : public ExprStmtNode {
-public:
-    IdentifierNode(std::string value) :
-        value_(value) {}
-
-    Value *codegen() override;
-    std::string value_;
-};
+// identifierNode below this line -
 
 class UnaryNode : public ExprStmtNode {
 public:
@@ -120,4 +175,34 @@ public:
     virtual Value *codegen();
     IdentifierNode *iden;
     ExprStmtNode *expr;
+};
+
+class FuncDeclNode : public DeclNode {
+public:
+    FuncDeclNode() {}
+    virtual Value *codegen();
+
+    bool empty_param;
+    IdentifierNode *func_iden;
+    ParametersNode *params;
+    BlockNode      *func_block;
+};
+
+class ClassDeclNode : public DeclNode {
+public:
+    ClassDeclNode() {}
+    virtual Value *codegen();
+
+    // TODO: define child nodes
+};
+
+class ForStmtNode : public StmtNode {
+public:
+    ForStmtNode() {}
+    virtual Value *codegen() override;
+
+    VarDeclNode  *init;
+    ExprStmtNode *condition;
+    ExprStmtNode *update;
+    BlockNode    *loop_block;
 };
