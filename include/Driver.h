@@ -42,6 +42,30 @@ Value* VarDeclNode::codegen() {
     return Alloca;
 }
 
+Value* BlockNode::codegen() {
+    for(auto & i : statements) {
+        i->codegen();
+    }
+}
+
+Value* ParametersNode::codegen() {
+    for(auto & i : identifiers) {
+        i->codegen();
+    }
+}
+
+/**Value* IfStmtNode::codegen() {
+    return Builder->CreateCondBr(if_expr->codegen(), if_block, else_block);
+}**/
+
+Value* ReturnStmtNode::codegen() {
+
+}
+
+Value* WhileStmtNode::codegen() {
+
+}
+
 Value* PrintStmtNode::codegen() {
     return ConstantFP::get(*TheContext, APFloat(1.5));
 }
