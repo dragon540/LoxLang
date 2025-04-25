@@ -32,16 +32,24 @@ private:
 
     //std::list<StmtNode*> parse();
     DeclNode* parse_decl_();
-    VarDeclNode* parse_var_decl_();
     StmtNode* parse_stmt_();
     ExprStmtNode* parse_expr_stmt_();
+    ForStmtNode* parse_for_stmt_();
+    IfStmtNode* parse_if_stmt_();
     PrintStmtNode* parse_print_stmt_();
+    ReturnStmtNode* parse_return_stmt_();
+    WhileStmtNode* parse_while_stmt_();
+    BlockNode* parse_block_();
+    LiteralNode* parse_literal_();
+    GroupingNode* parse_grouping_();
     UnaryNode* parse_unary_();
     BinaryNode* parse_binary_();
-    GroupingNode* parse_grouping_();
+    VarDeclNode* parse_var_decl_();
+    FuncDeclNode* parse_func_decl_();
+    ClassDeclNode* parse_class_decl_();
+    ParametersNode* parse_params_();
     void parse_operator_();
     NumberNode* parse_number_(int num);
     StringNode* parse_string(std::string str);
     IdentifierNode* parse_identifier(std::string str);
-    LiteralNode* parse_literal(ExprStmtNode* node);
 };

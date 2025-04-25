@@ -21,9 +21,20 @@ int main(int argc, char **argv) {
             src += "\n";
         }
         // std::cout << src << std::endl;
+
+        // Calling lexer
         llvm::StringRef source_code(src);
         Lexer lexer(source_code);
         lexer.printTokenList();
+
+        // Calling Parser
+        Parser parser(lexer.return_token_list());
+        std::list<DeclNode*> declarations = parser.parse();
+
+        std::cout << "Number of declarsations: " << declarations.size() << std::endl;
+
+    } else {
+        std::cerr << "Source code not given" << std::endl;
     }
     //llvm::StringRef str2("var id = \"hello\" ; EOF");
     /***llvm::StringRef str2("var ss = 34;");

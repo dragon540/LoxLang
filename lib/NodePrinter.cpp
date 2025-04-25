@@ -1,6 +1,9 @@
 #include "NodePrinter.h"
 
-void NodePrinter::printExpr(ExprStmtNode *node) {
+void printDeclaration(DeclNode *node);
+void PrintStatement(StmtNode *node);
+
+void NodePrinter::printExprStmt(ExprStmtNode *node) {
         if (auto str = dynamic_cast<StringNode*>(node)) {
             printString(str);
         } else if(auto iden = dynamic_cast<IdentifierNode*>(node)) {
@@ -14,18 +17,27 @@ void NodePrinter::printExpr(ExprStmtNode *node) {
         }
 }
 
+void printForStmt(ForStmtNode *node);
+void printIfStmt(IfStmtNode *node);
+void printPrintStmt(PrintStmtNode *node);
+void printReturnStmt(ReturnStmtNode *node);
+void printWhileStmt(WhileStmtNode *node);
+void printBlock(BlockNode *node);
+void printLiteral(LiteralNode *node);
+void printGrouping(GroupingNode *node);
+
 void NodePrinter::printUnary(UnaryNode *node) {
     std::cout << "( " << static_cast<int>(node->symbol_) << " ";
-    printExpr(node->expr_);
+    printExprStmt(node->expr_);
     std::cout  << " ) ";
 
 }
 
 void NodePrinter::printBinary(BinaryNode *node) {
     std::cout << "( ";
-    printExpr(node->left_);
+    printExprStmt(node->left_);
     std:: cout << " ( " << static_cast<int>(node->op_) << " ) ";
-    printExpr(node->right_);
+    printExprStmt(node->right_);
     std::cout << " ) ";
 }
 

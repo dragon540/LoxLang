@@ -298,6 +298,9 @@ void Lexer::scan_kw_and_identifier(std::string literal) {
     else if(literal == "for") {
         addToken(TokenType::for_kw, line);
     }
+    else if(literal == "while") {
+        addToken(TokenType::while_kw, line);
+    }
     else if(literal == "true") {
         addToken(TokenType::true_kw, line);
     }
@@ -306,6 +309,12 @@ void Lexer::scan_kw_and_identifier(std::string literal) {
     }
     else if(literal == "print") {
         addToken(TokenType::print_kw, line);
+    }
+    else if(literal == "class") {
+        addToken(TokenType::class_kw, line);
+    }
+    else if(literal == "return") {
+        addToken(TokenType::return_kw, line);
     }
     else {
         addToken(TokenType::identifier, literal, line);

@@ -4,13 +4,16 @@ enum class TokenType {
     // keyword
     var_kw,
     func_kw,
+    class_kw,
     if_kw,
     elif_kw,
     else_kw,
     for_kw,
+    while_kw,
     true_kw,
     false_kw,
     print_kw,
+    return_kw,
 
     //
     identifier,

@@ -63,14 +63,39 @@ std::list<DeclNode*> Parser::parse() {
 }
 
 DeclNode* Parser::parse_decl_() {
-    DeclNode *decl;
+    DeclNode *decl = nullptr;
     if(peek() == TokenType::var_kw) {
         decl = parse_var_decl_();
+    }
+    else if(peek() == TokenType::func_kw) {
+        decl = parse_func_decl_();
+    }
+    else if(peek() == TokenType::class_kw) {
+        decl = parse_class_decl_();
     }
     else {
         decl = parse_stmt_();
     }
     return decl;
+}
+
+StmtNode* Parser::parse_stmt_() {
+    if(peek() == TokenType::for_kw) {
+        return parse_for_stmt_();
+    }
+    else if(peek() == TokenType::if_kw) {
+        return parse_if_stmt_();
+    }
+    else if(peek() == TokenType::print_kw) {
+        return parse_print_stmt_();
+    }
+    else if(peek() == TokenType::return_kw) {
+        return parse_return_stmt_();
+    }
+    else if(peek() == TokenType::while_kw) {
+        return parse_while_stmt_();
+    }
+    return parse_expr_stmt_();
 }
 
 VarDeclNode* Parser::parse_var_decl_() {
@@ -102,13 +127,6 @@ VarDeclNode* Parser::parse_var_decl_() {
     return varDecl;
 }
 
-StmtNode* Parser::parse_stmt_() {
-    if(peek() == TokenType::print_kw) {
-        return parse_print_stmt_();
-    }
-    return parse_expr_stmt_();
-}
-
 PrintStmtNode* Parser::parse_print_stmt_() {
     PrintStmtNode* print_stmt;
     if(match(TokenType::print_kw)) {
@@ -129,6 +147,26 @@ PrintStmtNode* Parser::parse_print_stmt_() {
         }
         else {
             std::cout << "Error: Missing ( after print keyword" << std::endl;
+        }
+    }
+}
+
+ReturnStmtNode* Parser::parse_return_stmt_() {
+    ReturnStmtNode *node = nullptr;
+    if(match(TokenType::return_kw)) {
+        if(match(TokenType::semicolon)) {
+            node->return_void = true;
+            node->ret_expr = nullptr;
+            if(match(TokenType::semicolon)) {
+                return node;
+            }
+        }
+        else {
+            node->return_void = false;
+            node->ret_expr = parse_expr_stmt_();
+            if(match(TokenType::semicolon)) {
+                return node;
+            }
         }
     }
 }
@@ -186,6 +224,98 @@ ExprStmtNode* Parser::parse_expr_stmt_() {
     return result;
 }
 
+// TODO: Error handling
+ForStmtNode* Parser::parse_for_stmt_() {
+    ForStmtNode *node = nullptr;
+    if(match(TokenType::for_kw)) {
+        if(match(TokenType::open_paren)) {
+            node->init = parse_var_decl_();
+            if(match(TokenType::semicolon)) {
+                node->condition = parse_expr_stmt_();
+                if(match(TokenType::semicolon)) {
+                    node->update = parse_expr_stmt_();
+                    if(match(TokenType::close_paren)) {
+                        node->loop_block = parse_block_();
+                    }
+                }
+            }
+        }
+    }
+    //else {
+    //}
+    return node;
+}
+
+// TODO: Error handling
+IfStmtNode* Parser::parse_if_stmt_() {
+    IfStmtNode *node = nullptr;
+    if(match(TokenType::if_kw)) {
+        if(match(TokenType::open_paren)) {
+            node->if_expr = parse_expr_stmt_();
+            if(peek() == TokenType::close_paren) {
+                node->if_block = parse_block_();
+                if(match(TokenType::else_kw)) {
+                    node->else_expr = parse_expr_stmt_();
+                    if(peek() == TokenType::open_curly) {
+                        node->else_block = parse_block_();
+                    }
+                }
+                else {
+                    node->else_expr = nullptr;
+                    node->else_block = nullptr;
+                }
+            }
+        }
+    }
+    return node;
+}
+
+// TODO: Error handling
+WhileStmtNode* Parser::parse_while_stmt_() {
+    WhileStmtNode *node = nullptr;
+    if(match(TokenType::while_kw)) {
+        if(match(TokenType::open_paren)) {
+            node->conditional_expr = parse_expr_stmt_();
+            if(match(TokenType::close_paren)) {
+                node->loop_block = parse_block_();
+            }
+        }
+    }
+    return node;
+}
+
+// TODO: Error handling and testing
+FuncDeclNode* Parser::parse_func_decl_() {
+    FuncDeclNode *node;
+    if(match(TokenType::func_kw)) {
+        if(peek() == TokenType::identifier) {
+            Token t = consume();
+            node->func_iden = parse_identifier(t.value_);
+            if(match(TokenType::open_paren)) {
+                if(match(TokenType::close_paren)) {
+                    node->empty_param = true;
+                    node->params = nullptr;
+                    if(peek() == TokenType::open_curly) {
+                        node->func_block = parse_block_();
+                    }
+                }
+                else {
+                    node->empty_param = false;
+                    node->params = parse_params_();
+                    if(match(TokenType::close_paren)) {
+                        if(peek() == TokenType::open_curly) {
+                            node->func_block = parse_block_();
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return node;
+}
+
+
+
 NumberNode* Parser::parse_number_(int num) {
     NumberNode* node = new NumberNode(num);
     return node;
@@ -201,7 +331,7 @@ IdentifierNode* Parser::parse_identifier(std::string str) {
     return node;
 }
 
-LiteralNode* Parser::parse_literal(ExprStmtNode* node) {
+/***LiteralNode* Parser::parse_literal(ExprStmtNode* node) {
     LiteralNode* literal_node = new LiteralNode(node);
     return literal_node;
-}
+}***/
