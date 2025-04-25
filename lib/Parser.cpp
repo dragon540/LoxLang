@@ -314,6 +314,29 @@ FuncDeclNode* Parser::parse_func_decl_() {
     return node;
 }
 
+ClassDeclNode* Parser::parse_class_decl_() {
+
+}
+
+ParametersNode* Parser::parse_params_() {
+
+}
+
+BlockNode* Parser::parse_block_() {
+    BlockNode *node = new BlockNode;
+
+    if(match(TokenType::open_curly)) {
+        while(peek() != TokenType::close_curly) {
+            node->statements.push_back(parse_expr_stmt_());
+        }
+        if(match(TokenType::close_curly)) {
+            return node;
+        }
+    }
+    else {
+        std::cerr << "Missing { in the Block" << std::endl;
+    }
+}
 
 
 NumberNode* Parser::parse_number_(int num) {
