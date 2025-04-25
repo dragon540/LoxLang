@@ -166,7 +166,11 @@ void Lexer::scanToken() {
     {
         std::string numeric_lit = "";
         numeric_lit += c;
-        scan_numeric(numeric_lit);
+        if(isDigit(readNext())) {
+            scan_numeric(numeric_lit);
+        } else {
+            addToken(TokenType::int_numeric, numeric_lit, line);
+        }
         break;
     }
 

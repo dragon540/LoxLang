@@ -117,7 +117,7 @@ VarDeclNode* Parser::parse_var_decl_() {
                     }
                 }
                 else {
-                    std::cout << "Expected ; after expression" << std::endl;
+                    std::cerr << "Expected ; after expression" << std::endl;
                     delete expr;
                 }
             }
