@@ -8,7 +8,7 @@ class NodePrinter {
 public:
     void printProgram();
     void printDeclaration(DeclNode *node);
-    void PrintStatement(StmtNode *node);
+    void printStatement(StmtNode *node);
     void printExprStmt(ExprStmtNode *node);
     void printForStmt(ForStmtNode *node);
     void printIfStmt(IfStmtNode *node);

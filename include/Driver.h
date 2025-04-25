@@ -42,6 +42,14 @@ Value* VarDeclNode::codegen() {
     return Alloca;
 }
 
+Value* FuncDeclNode::codegen() {
+
+}
+
+Value* ClassDeclNode::codegen() {
+
+}
+
 Value* BlockNode::codegen() {
     for(auto & i : statements) {
         i->codegen();
@@ -63,6 +71,14 @@ Value* ReturnStmtNode::codegen() {
 }
 
 Value* WhileStmtNode::codegen() {
+
+}
+
+Value* IfStmtNode::codegen() {
+
+}
+
+Value* ForStmtNode::codegen() {
 
 }
 

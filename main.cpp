@@ -32,6 +32,12 @@ int main(int argc, char **argv) {
         std::list<DeclNode*> declarations = parser.parse();
         //std::cout << "Number of declarsations: " << declarations.size() << std::endl;
 
+        // Pretty printer
+        NodePrinter np;
+        for(auto & i : declarations) {
+            np.printDeclaration(i);
+        }
+
     } else {
         std::cerr << "Source code not given" << std::endl;
     }

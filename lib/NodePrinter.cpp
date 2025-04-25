@@ -1,7 +1,49 @@
 #include "NodePrinter.h"
 
-void printDeclaration(DeclNode *node);
-void PrintStatement(StmtNode *node);
+void NodePrinter::printDeclaration(DeclNode *node) {
+    if(auto var = dynamic_cast<VarDeclNode*>(node)) {
+        printVarDecl(var);
+    }
+    else if(auto func = dynamic_cast<FuncDeclNode*>(node)) {
+        printFuncDecl(func);
+    }
+    else if(auto cls = dynamic_cast<ClassDeclNode*>(node)) {
+        printClassDecl(cls);
+    }
+    else if(auto stmt = dynamic_cast<StmtNode*>(node)) {
+        printStatement(stmt);
+    }
+    else {
+        std::cerr << "Unrecognizable declaration" << std::endl;
+    }
+}
+
+void NodePrinter::printStatement(StmtNode *node) {
+    if(auto expr = dynamic_cast<ExprStmtNode*>(node)) {
+        printExprStmt(expr);
+    }
+    else if(auto forStmt = dynamic_cast<ForStmtNode*>(node)) {
+        printForStmt(forStmt);
+    }
+    else if(auto ifStmt = dynamic_cast<IfStmtNode*>(node)) {
+        printIfStmt(ifStmt);
+    }
+    else if(auto printStmt = dynamic_cast<PrintStmtNode*>(node)) {
+        printPrintStmt(printStmt);
+    }
+    else if(auto ret = dynamic_cast<ReturnStmtNode*>(node)) {
+        printReturnStmt(ret);
+    }
+    else if(auto whileStmt = dynamic_cast<WhileStmtNode*>(node)) {
+        printWhileStmt(whileStmt);
+    }
+    else if(auto block = dynamic_cast<BlockNode*>(node)) {
+        printBlock(block);
+    }
+    else {
+        std::cerr << "Unrecognizable statement type" << std::endl;
+    }
+}
 
 void NodePrinter::printExprStmt(ExprStmtNode *node) {
         if (auto str = dynamic_cast<StringNode*>(node)) {
@@ -13,18 +55,64 @@ void NodePrinter::printExprStmt(ExprStmtNode *node) {
         } else if (auto unary = dynamic_cast<UnaryNode*>(node)) {
             printUnary(unary);
         } else {
-            std::cout << "Unknown expression";
+            std::cerr << "Unknown expression" << std::endl;
         }
 }
 
-void printForStmt(ForStmtNode *node);
-void printIfStmt(IfStmtNode *node);
-void printPrintStmt(PrintStmtNode *node);
-void printReturnStmt(ReturnStmtNode *node);
-void printWhileStmt(WhileStmtNode *node);
-void printBlock(BlockNode *node);
-void printLiteral(LiteralNode *node);
-void printGrouping(GroupingNode *node);
+void NodePrinter::printForStmt(ForStmtNode *node) {
+    std::cout << "( ";
+    printVarDecl(node->init);
+    printExprStmt(node->condition);
+    printExprStmt(node->update);
+    printBlock(node->loop_block);
+    std::cout << " )";
+}
+
+void NodePrinter::printIfStmt(IfStmtNode *node) {
+    std::cout << "( ";
+    printExprStmt(node->if_expr);
+    printBlock(node->if_block);
+    printExprStmt(node->else_expr);
+    printBlock(node->else_block);
+    std::cout << " )";
+}
+
+void NodePrinter::printPrintStmt(PrintStmtNode *node) {
+
+}
+
+void NodePrinter::printReturnStmt(ReturnStmtNode *node) {
+    std::cout << "( ";
+    if(node->return_void == true) {
+        std::cout << " )";
+    }
+    else {
+        printExprStmt(node->ret_expr);
+    }
+    std::cout << " )";
+}
+
+void NodePrinter::printWhileStmt(WhileStmtNode *node) {
+    std::cout << "( ";
+    printExprStmt(node->conditional_expr);
+    printBlock(node->loop_block);
+    std::cout << " )";
+}
+
+void NodePrinter::printBlock(BlockNode *node) {
+    std::cout << "( ";
+    for(auto & i : node->statements) {
+        printStatement(i);
+    }
+}
+
+void NodePrinter::printLiteral(LiteralNode *node) {
+
+}
+
+void NodePrinter::printGrouping(GroupingNode *node) {
+
+}
 
 void NodePrinter::printUnary(UnaryNode *node) {
     std::cout << "( " << static_cast<int>(node->symbol_) << " ";
@@ -39,6 +127,23 @@ void NodePrinter::printBinary(BinaryNode *node) {
     std:: cout << " ( " << static_cast<int>(node->op_) << " ) ";
     printExprStmt(node->right_);
     std::cout << " ) ";
+}
+
+void NodePrinter::printVarDecl(VarDeclNode *node) {
+    std::cout << "( ";
+    printIdentifier(node->iden);
+    printExprStmt(node->expr);
+    std::cout << " )";
+}
+
+// TODO:
+void NodePrinter::printFuncDecl(FuncDeclNode *node) {
+    std::cout << "( ";
+}
+
+// TODO:
+void NodePrinter::printClassDecl(ClassDeclNode *node) {
+    std::cout << "( ";
 }
 
 //void NodePrinter::printNumber() {

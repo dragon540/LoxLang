@@ -110,7 +110,11 @@ VarDeclNode* Parser::parse_var_decl_() {
             if(match(TokenType::equal_assignment)) {
                 expr = parse_expr_stmt_();
                 if(match(TokenType::semicolon)) {
-                    varDecl = new VarDeclNode(iden, expr);
+                    if(expr) {
+                        varDecl = new VarDeclNode(iden, expr);
+                    } else {
+                        std::cerr << "Error in right side expression" << std::endl;
+                    }
                 }
                 else {
                     std::cout << "Expected ; after expression" << std::endl;
@@ -152,7 +156,7 @@ PrintStmtNode* Parser::parse_print_stmt_() {
 }
 
 ReturnStmtNode* Parser::parse_return_stmt_() {
-    ReturnStmtNode *node = nullptr;
+    ReturnStmtNode *node = new ReturnStmtNode;
     if(match(TokenType::return_kw)) {
         if(match(TokenType::semicolon)) {
             node->return_void = true;
@@ -226,7 +230,7 @@ ExprStmtNode* Parser::parse_expr_stmt_() {
 
 // TODO: Error handling
 ForStmtNode* Parser::parse_for_stmt_() {
-    ForStmtNode *node = nullptr;
+    ForStmtNode *node = new ForStmtNode;
     if(match(TokenType::for_kw)) {
         if(match(TokenType::open_paren)) {
             node->init = parse_var_decl_();
@@ -248,7 +252,7 @@ ForStmtNode* Parser::parse_for_stmt_() {
 
 // TODO: Error handling
 IfStmtNode* Parser::parse_if_stmt_() {
-    IfStmtNode *node = nullptr;
+    IfStmtNode *node = new IfStmtNode;
     if(match(TokenType::if_kw)) {
         if(match(TokenType::open_paren)) {
             node->if_expr = parse_expr_stmt_();
@@ -272,7 +276,7 @@ IfStmtNode* Parser::parse_if_stmt_() {
 
 // TODO: Error handling
 WhileStmtNode* Parser::parse_while_stmt_() {
-    WhileStmtNode *node = nullptr;
+    WhileStmtNode *node = new WhileStmtNode;
     if(match(TokenType::while_kw)) {
         if(match(TokenType::open_paren)) {
             node->conditional_expr = parse_expr_stmt_();
@@ -286,7 +290,7 @@ WhileStmtNode* Parser::parse_while_stmt_() {
 
 // TODO: Error handling and testing
 FuncDeclNode* Parser::parse_func_decl_() {
-    FuncDeclNode *node;
+    FuncDeclNode *node = new FuncDeclNode;
     if(match(TokenType::func_kw)) {
         if(peek() == TokenType::identifier) {
             Token t = consume();
