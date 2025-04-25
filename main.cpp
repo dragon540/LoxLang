@@ -30,8 +30,7 @@ int main(int argc, char **argv) {
         // Calling Parser
         Parser parser(lexer.return_token_list());
         std::list<DeclNode*> declarations = parser.parse();
-
-        std::cout << "Number of declarsations: " << declarations.size() << std::endl;
+        //std::cout << "Number of declarsations: " << declarations.size() << std::endl;
 
     } else {
         std::cerr << "Source code not given" << std::endl;
