@@ -37,6 +37,12 @@ int main(int argc, char **argv) {
         for(auto & i : declarations) {
             np.printDeclaration(i);
         }
+        std::cout << std::endl;
+
+        // LLVM IR printing
+        for(auto &i : declarations) {
+            GenerateCode(i);
+        }
 
     } else {
         std::cerr << "Source code not given" << std::endl;

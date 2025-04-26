@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <map>
+#include <typeinfo>
 
 static std::unique_ptr<LLVMContext> TheContext;
 static std::unique_ptr<Module> TheModule;
@@ -20,17 +21,23 @@ Value* ErrorV(const char *Str) {
 
 // generic numeric codegen for all nodes for now to see llvm codegen working
 
+// Working:
+// Since we are declaring variable here, basically we need to allocate some
+// space on stack, then store the value;
 Value* VarDeclNode::codegen() {
-    std::cout << "var decl codegen" << std::endl;
-    std::cout << iden->value_.c_str() << std::endl;
+    std::cout << "variable declaration codegen :" << std::endl;
+    std::cout << "Identifier name: " << iden->value_.c_str() << std::endl;
     if(Builder->GetInsertBlock() == nullptr) {
         std::cout << "not inside any basic block" << std::endl;
     }
     AllocaInst *Alloca = Builder->CreateAlloca(Type::getInt32Ty(*TheContext), nullptr, (iden->value_).c_str());
-    std::cout << "alloca" << std::endl;
+    //std::cout << "alloca" << std::endl;
 
     if(expr) {
+        //std::cout << "expr is valid" << std::endl;
+        //std::cout << "actual runtime type: " << typeid(*expr).name() << std::endl;
         Value *val = expr->codegen();
+        //std::cout << "expr->codegen() should have been called before this line" << std::endl;
         if(!val) {
             std::cout << "nullptr" << std::endl;
             return nullptr;
@@ -91,7 +98,8 @@ Value* ExprStmtNode::codegen() {
 }
 
 Value* NumberNode::codegen() {
-    return ConstantInt::get(*TheContext, APInt(32, value_));
+    //std::cout << "we are here\n";
+    return ConstantInt::get(*TheContext, APInt(32, 55));
 }
 
 Value* StringNode::codegen() {
@@ -136,9 +144,7 @@ Value* UnaryNode::codegen() {
 }
 
 Value* IdentifierNode::codegen() {
-    std::cout << "ident codegen" << std::endl;
     Value *V = NamedValues[value_];
-    std::cout << "opsdfcd" << std::endl;
     if(V) {
         return Builder->CreateLoad(Type::getDoubleTy(*TheContext), V, value_.c_str());
     }
@@ -165,15 +171,18 @@ void GenerateCode(DeclNode *Root) {
     BasicBlock *entry = BasicBlock::Create(*TheContext, "entry", mainFunc);
     Builder->SetInsertPoint(entry);
 
-    std::cout << "fhdjsk" << std::endl;
+    std::cout << "code generation ------ " << std::endl;
     if (llvm::Value *Val = Root->codegen()) {
         // Print generated IR
-        Val->print(llvm::errs());
-        llvm::errs() << "\n";
+        //Val->print(llvm::errs());
+        //llvm::errs() << "\n";
 
         // Finish off the function with a return void
         Builder->CreateRetVoid();
-    } else {
+
+        TheModule->print(llvm::errs(), nullptr);
+    }
+    else {
         fprintf(stderr, "Code generation failed.\n");
     }
 }
