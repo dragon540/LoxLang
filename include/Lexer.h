@@ -18,6 +18,7 @@ public:
 
     bool isEof();
     char readNext();
+    char readCurrent();
 
     // returns current character and move to next
     // character of text being read

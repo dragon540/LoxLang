@@ -48,6 +48,9 @@ void NodePrinter::printStatement(StmtNode *node) {
 void NodePrinter::printExprStmt(ExprStmtNode *node) {
         if (auto str = dynamic_cast<StringNode*>(node)) {
             printString(str);
+        } else if(auto num = dynamic_cast<NumberNode*>(node)) {
+            printNumber(num);
+        // TODO : something wrong with identifier type, revisit fom here
         } else if(auto iden = dynamic_cast<IdentifierNode*>(node)) {
             printIdentifier(iden);
         } else if (auto bin = dynamic_cast<BinaryNode*>(node)) {
@@ -146,9 +149,9 @@ void NodePrinter::printClassDecl(ClassDeclNode *node) {
     std::cout << "( ";
 }
 
-//void NodePrinter::printNumber() {
-//
-//}
+void NodePrinter::printNumber(NumberNode *node) {
+    std::cout << "( " << node->value_ << " )";
+}
 
 void NodePrinter::printString(StringNode *node) {
     std::cout << "( " << node->value_ << " ) ";

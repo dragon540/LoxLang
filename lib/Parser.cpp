@@ -176,7 +176,9 @@ ReturnStmtNode* Parser::parse_return_stmt_() {
 }
 
 ExprStmtNode* Parser::parse_expr_stmt_() {
+    //std::cout << "before, consuming, peeking - " << static_cast<int>(peek()) << std::endl;
     Token tok = consume();
+    //std::cout << "after consuming, peeking - " << static_cast<int>(peek()) << std::endl;
     ExprStmtNode* result = nullptr;
     switch(tok.type_) {
         // Literal

@@ -25,6 +25,11 @@ char Lexer::readNext() {
     return src_[current_idx + 1];
 }
 
+// returns current character
+char Lexer::readCurrent() {
+    return src_[current_idx];
+}
+
 // returns current character and move to next
 // character of text being read
 char Lexer::consume() {
@@ -166,7 +171,8 @@ void Lexer::scanToken() {
     {
         std::string numeric_lit = "";
         numeric_lit += c;
-        if(isDigit(readNext())) {
+        // problem is here, unable to lex two digit number into single token
+        if(isDigit(readCurrent())) {
             scan_numeric(numeric_lit);
         } else {
             addToken(TokenType::int_numeric, numeric_lit, line);
@@ -276,10 +282,10 @@ void Lexer::scan_literal(std::string literal) {
 }
 
 void Lexer::scan_numeric(std::string numeric_literal) {
-    while( isDigit(readNext()) ) {
+    while( isDigit(readCurrent()) ) {
         numeric_literal += consume();
     }
-    numeric_literal += consume();
+    //numeric_literal += consume();
     addToken(TokenType::int_numeric, numeric_literal, line);
 }
 
