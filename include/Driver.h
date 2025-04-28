@@ -14,7 +14,7 @@ static std::unique_ptr<Module> TheModule;
 static std::unique_ptr<IRBuilder<>> Builder;
 static std::map<std::string, Value *> NamedValues;
 
-Value* ErrorV(const char *Str) {
+Value* ErrorV(std::string Str) {
     std::cout << Str << std::endl;
     return 0;
 }
@@ -143,13 +143,21 @@ Value* UnaryNode::codegen() {
     }
 }
 
+// Working:
+// codegen for variable allocation, only allocates space in memory for the variable
+// TODO: currently all IR generations are carried out in seperate module, change it.
 Value* IdentifierNode::codegen() {
-    Value *V = NamedValues[value_];
-    if(V) {
-        return Builder->CreateLoad(Type::getDoubleTy(*TheContext), V, value_.c_str());
+    if(Builder->GetInsertBlock() == nullptr) {
+        std::cout << "not inside any basic block" << std::endl;
+    }
+    if(NamedValues.find(value_) != NamedValues.end()) {
+        AllocaInst *Alloca = Builder->CreateAlloca(Type::getInt32Ty(*TheContext), nullptr, value_.c_str());
+        NamedValues[value_] = Alloca;
+        return Alloca;
     }
     else {
-        return ErrorV("Unknown variable name");
+        std::string msg = value_ + " " + "is already declared";
+        return ErrorV(msg);
     }
 }
 

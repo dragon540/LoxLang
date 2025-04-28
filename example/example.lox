@@ -1,4 +1,6 @@
+var ij;
 var xi = 5444;
+var xi;
 var hello = 99;
 
 // var str = "ofecjffhf";
