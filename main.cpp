@@ -47,16 +47,5 @@ int main(int argc, char **argv) {
     } else {
         std::cerr << "Source code not given" << std::endl;
     }
-    //llvm::StringRef str2("var id = \"hello\" ; EOF");
-    /***llvm::StringRef str2("var ss = 34;");
-	Lexer l(str2);
-	l.printTokenList();
-    Parser parser(l.return_token_list());
-    std::list<DeclNode*> declarations = parser.parse();
-    std::cout << declarations.size() << std::endl;
-
-    for(auto & i : declarations) {
-        GenerateCode(i);
-    }***/
 	return 0;
 }

@@ -99,7 +99,7 @@ Value* ExprStmtNode::codegen() {
 
 Value* NumberNode::codegen() {
     //std::cout << "we are here\n";
-    return ConstantInt::get(*TheContext, APInt(32, 55));
+    return ConstantInt::get(*TheContext, APInt(32, value_));
 }
 
 Value* StringNode::codegen() {
