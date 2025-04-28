@@ -38,10 +38,12 @@ Value* VarDeclNode::codegen() {
         //std::cout << "actual runtime type: " << typeid(*expr).name() << std::endl;
         Value *val = expr->codegen();
         //std::cout << "expr->codegen() should have been called before this line" << std::endl;
+        std::cout << "pcmviewnr" << std::endl;
         if(!val) {
             std::cout << "nullptr" << std::endl;
             return nullptr;
         }
+        std::cout << "jujfehdiw haha" << std::endl;
         Builder->CreateStore(val, Alloca);
     }
 
@@ -50,7 +52,6 @@ Value* VarDeclNode::codegen() {
 }
 
 Value* FuncDeclNode::codegen() {
-
 }
 
 Value* ClassDeclNode::codegen() {
@@ -111,21 +112,37 @@ Value* LiteralNode::codegen() {
 }
 
 Value* BinaryNode::codegen() {
+    //std::cout << "we are in binary codegen" << std::endl;
     Value* Left = left_->codegen();
     Value* Right = right_->codegen();
+    if(!Builder) {
+        std::cerr << "Something wrong with builder in BinaryNode::codegen()" << std::endl;
+    }
     if(Left != 0 && Right != 0) {
         switch(op_) {
         case TokenType::plus:
-            return Builder->CreateFAdd(Left, Right, "addtmp");
+            return Builder->CreateAdd(Left, Right, "addtmp");
         case TokenType::minus:
-            return Builder->CreateFSub(Left, Right, "subtmp");
+            return Builder->CreateSub(Left, Right, "subtmp");
         case TokenType::mul:
-            return Builder->CreateFMul(Left, Right, "multmp");
-
+            return Builder->CreateMul(Left, Right, "multmp");
+        case TokenType::less_than:
+            return Builder->CreateICmpULT(Left, Right);
+        case TokenType::less_than_equal:
+            return Builder->CreateICmpULE(Left, Right);
+        case TokenType::more_than:
+            return Builder->CreateICmpUGT(Left, Right);
+        case TokenType::more_than_equal:
+            return Builder->CreateICmpUGE(Left, Right);
+        case TokenType::equal_comparison:
+            return Builder->CreateICmpEQ(Left, Right);
+        case TokenType::not_equal_comparison:
+            return Builder->CreateICmpNE(Left, Right);
         default:
-            return ErrorV("Invalid binary operation\n");
+            return ErrorV("Invalid binary operator\n");
         }
     }
+    return ErrorV("Invalid binary operation\n");
 }
 
 Value* UnaryNode::codegen() {

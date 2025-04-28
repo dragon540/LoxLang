@@ -42,8 +42,8 @@ private:
     BlockNode* parse_block_();
     LiteralNode* parse_literal_();
     GroupingNode* parse_grouping_();
-    UnaryNode* parse_unary_();
-    BinaryNode* parse_binary_();
+    UnaryNode* parse_unary_(TokenType t);
+    BinaryNode* parse_binary_(ExprStmtNode *current);
     VarDeclNode* parse_var_decl_();
     FuncDeclNode* parse_func_decl_();
     ClassDeclNode* parse_class_decl_();

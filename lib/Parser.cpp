@@ -175,6 +175,37 @@ ReturnStmtNode* Parser::parse_return_stmt_() {
     }
 }
 
+LiteralNode* Parser::parse_literal_() {
+
+}
+
+GroupingNode* Parser::parse_grouping_() {
+    ExprStmtNode *node = parse_expr_stmt_();
+    Token next_tok = consume();
+    if(next_tok.type_ != TokenType::close_paren) {
+        std::cerr << "Missing )\n";
+    }
+    return new GroupingNode(node);
+}
+
+UnaryNode* Parser::parse_unary_(TokenType t) {
+    ExprStmtNode *node = parse_expr_stmt_();
+    if(t == TokenType::minus) {
+        return new UnaryNode(TokenType::minus, node);
+    }
+    else if(t == TokenType::not_operator) {
+        return new UnaryNode(TokenType::not_operator, node);
+    }
+}
+
+BinaryNode* Parser::parse_binary_(ExprStmtNode *current) {
+    //ExprStmtNode *left_node = parse_expr_stmt_();
+    Token op = consume();
+    ExprStmtNode *right_node = parse_expr_stmt_();
+
+    return new BinaryNode(current, right_node, op.type_);
+}
+
 ExprStmtNode* Parser::parse_expr_stmt_() {
     //std::cout << "before, consuming, peeking - " << static_cast<int>(peek()) << std::endl;
     Token tok = consume();
@@ -183,7 +214,17 @@ ExprStmtNode* Parser::parse_expr_stmt_() {
     switch(tok.type_) {
         // Literal
         case TokenType::int_numeric:
-            result = parse_number_(stoi(tok.value_));
+            std::cout << "we are here" << std::endl;
+            if(peek() == TokenType::semicolon) {
+                result = parse_number_(stoi(tok.value_));
+            }
+            else if(peek() == TokenType::plus || peek() == TokenType::minus ||
+                    peek() == TokenType::mul || peek() == TokenType::less_than ||
+                    peek() == TokenType::less_than_equal || peek() == TokenType::more_than ||
+                    peek() ==  TokenType::more_than_equal || peek() == TokenType::equal_comparison ||
+                    peek() ==  TokenType::not_equal_comparison) {
+                result = parse_binary_(parse_number_(stoi(tok.value_)));
+            }
         break;
         case TokenType::string_lit:
             result = parse_string(tok.value_);
@@ -195,29 +236,13 @@ ExprStmtNode* Parser::parse_expr_stmt_() {
 
         // Unary
         case TokenType::minus:
-    {
-            ExprStmtNode *node = parse_expr_stmt_();
-            result = new UnaryNode(TokenType::minus, node);
-    }
-        break;
         case TokenType::not_operator:
-    {
-            ExprStmtNode *node = parse_expr_stmt_();
-            result = new UnaryNode(TokenType::not_operator, node);
-    }
+            result = parse_unary_(tok.type_);
         break;
 
         // Grouping
         case TokenType::open_paren:
-    {
-            ExprStmtNode *node = parse_expr_stmt_();
-            Token next_tok = consume();
-            if(next_tok.type_ != TokenType::close_paren) {
-                std::cout << "Missing )\n";
-                break;
-            }
-            result = new GroupingNode(node);
-    }
+            result = parse_grouping_();
         break;
 
         case TokenType::close_paren:
@@ -225,7 +250,9 @@ ExprStmtNode* Parser::parse_expr_stmt_() {
         break;
 
         // Binary
-
+        default:
+            //result = parse_binary_(tok);
+        break;
     }
     return result;
 }

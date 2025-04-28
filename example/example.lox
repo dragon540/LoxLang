@@ -1,6 +1,3 @@
-var ij;
-var xi = 5444;
-var xi;
-var hello = 99;
+var xi = 5444 < 43;
 
 // var str = "ofecjffhf";
