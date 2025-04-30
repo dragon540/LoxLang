@@ -45,7 +45,7 @@ class BlockNode {
 public:
     BlockNode() {}
     virtual Value *codegen();
-    std::vector<StmtNode*> statements;
+    std::vector<DeclNode*> declarations;
 };
 
 class IdentifierNode : public ExprStmtNode {

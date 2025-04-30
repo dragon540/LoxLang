@@ -46,6 +46,7 @@ void NodePrinter::printStatement(StmtNode *node) {
 }
 
 void NodePrinter::printExprStmt(ExprStmtNode *node) {
+    //std::cout << "actual runtime type: " << typeid(*node).name() << std::endl;
         if (auto str = dynamic_cast<StringNode*>(node)) {
             printString(str);
         } else if(auto num = dynamic_cast<NumberNode*>(node)) {
@@ -58,7 +59,7 @@ void NodePrinter::printExprStmt(ExprStmtNode *node) {
         } else if (auto unary = dynamic_cast<UnaryNode*>(node)) {
             printUnary(unary);
         } else {
-            std::cerr << "Unknown expression" << std::endl;
+            std::cerr << "Unknown expression... is it?" << std::endl;
         }
 }
 
@@ -72,11 +73,14 @@ void NodePrinter::printForStmt(ForStmtNode *node) {
 }
 
 void NodePrinter::printIfStmt(IfStmtNode *node) {
+    //std::cout << "printing IfStmt" << std::endl;
     std::cout << "( ";
     printExprStmt(node->if_expr);
     printBlock(node->if_block);
-    printExprStmt(node->else_expr);
-    printBlock(node->else_block);
+    if(node->else_expr != nullptr) {
+        printExprStmt(node->else_expr);
+        printBlock(node->else_block);
+    }
     std::cout << " )";
 }
 
@@ -104,9 +108,11 @@ void NodePrinter::printWhileStmt(WhileStmtNode *node) {
 
 void NodePrinter::printBlock(BlockNode *node) {
     std::cout << "( ";
-    for(auto & i : node->statements) {
-        printStatement(i);
+    //std::cout << "working till here" << std::endl;
+    for(auto & i : node->declarations) {
+        printDeclaration(i);
     }
+    std::cout << " )";
 }
 
 void NodePrinter::printLiteral(LiteralNode *node) {
@@ -125,6 +131,7 @@ void NodePrinter::printUnary(UnaryNode *node) {
 }
 
 void NodePrinter::printBinary(BinaryNode *node) {
+    //std::cout << "printing Binary" << std::endl;
     std::cout << "( ";
     printExprStmt(node->left_);
     std:: cout << " ( " << static_cast<int>(node->op_) << " ) ";

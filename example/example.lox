@@ -1,3 +1,8 @@
-var xi = 5444 < 43;
+var xi = 5444 + 43;
+
+if(8 != 5) {
+   var yu = 9;
+   var ui = 89;
+}
 
 // var str = "ofecjffhf";

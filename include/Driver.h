@@ -19,8 +19,6 @@ Value* ErrorV(std::string Str) {
     return 0;
 }
 
-// generic numeric codegen for all nodes for now to see llvm codegen working
-
 // Working:
 // Since we are declaring variable here, basically we need to allocate some
 // space on stack, then store the value;
@@ -38,12 +36,10 @@ Value* VarDeclNode::codegen() {
         //std::cout << "actual runtime type: " << typeid(*expr).name() << std::endl;
         Value *val = expr->codegen();
         //std::cout << "expr->codegen() should have been called before this line" << std::endl;
-        std::cout << "pcmviewnr" << std::endl;
         if(!val) {
             std::cout << "nullptr" << std::endl;
             return nullptr;
         }
-        std::cout << "jujfehdiw haha" << std::endl;
         Builder->CreateStore(val, Alloca);
     }
 
@@ -59,7 +55,7 @@ Value* ClassDeclNode::codegen() {
 }
 
 Value* BlockNode::codegen() {
-    for(auto & i : statements) {
+    for(auto & i : declarations) {
         i->codegen();
     }
 }
@@ -70,19 +66,21 @@ Value* ParametersNode::codegen() {
     }
 }
 
-/**Value* IfStmtNode::codegen() {
-    return Builder->CreateCondBr(if_expr->codegen(), if_block, else_block);
-}**/
+Value* IfStmtNode::codegen() {
+    Function *func = Builder->GetInsertBlock()->getParent();
+    BasicBlock *entry = Builder->GetInsertBlock();
+    BasicBlock *if_basic_block = BasicBlock::Create(*TheContext, "if_basic_block", func);
+    Builder->SetInsertPoint(if_basic_block);
+    if_block->codegen();
+    Builder->SetInsertPoint(entry);
+    return Builder->CreateCondBr(if_expr->codegen(), if_basic_block, 0);
+}
 
 Value* ReturnStmtNode::codegen() {
 
 }
 
 Value* WhileStmtNode::codegen() {
-
-}
-
-Value* IfStmtNode::codegen() {
 
 }
 

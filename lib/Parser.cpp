@@ -214,8 +214,7 @@ ExprStmtNode* Parser::parse_expr_stmt_() {
     switch(tok.type_) {
         // Literal
         case TokenType::int_numeric:
-            std::cout << "we are here" << std::endl;
-            if(peek() == TokenType::semicolon) {
+            if(peek() == TokenType::semicolon || peek() == TokenType::close_paren) {
                 result = parse_number_(stoi(tok.value_));
             }
             else if(peek() == TokenType::plus || peek() == TokenType::minus ||
@@ -251,7 +250,8 @@ ExprStmtNode* Parser::parse_expr_stmt_() {
 
         // Binary
         default:
-            //result = parse_binary_(tok);
+            //std::cout << "type = " << static_cast<int>(tok.type_) << std::endl;
+            result = parse_binary_(parse_number_(stoi(tok.value_)));
         break;
     }
     return result;
@@ -285,7 +285,7 @@ IfStmtNode* Parser::parse_if_stmt_() {
     if(match(TokenType::if_kw)) {
         if(match(TokenType::open_paren)) {
             node->if_expr = parse_expr_stmt_();
-            if(peek() == TokenType::close_paren) {
+            if(match(TokenType::close_paren)) {
                 node->if_block = parse_block_();
                 if(match(TokenType::else_kw)) {
                     node->else_expr = parse_expr_stmt_();
@@ -356,17 +356,23 @@ ParametersNode* Parser::parse_params_() {
 }
 
 BlockNode* Parser::parse_block_() {
+    std::cout << "parsing block" << std::endl;
     BlockNode *node = new BlockNode;
 
     if(match(TokenType::open_curly)) {
         while(peek() != TokenType::close_curly) {
-            node->statements.push_back(parse_expr_stmt_());
+            node->declarations.push_back(parse_decl_());
         }
         if(match(TokenType::close_curly)) {
+            //std::cout << "exiting block" << std::endl;
             return node;
+        }
+        else {
+            std::cerr << "Missing } in the block" << std::endl;
         }
     }
     else {
+        //std::cerr << "type: " << static_cast<int>(peek()) << std::endl;
         std::cerr << "Missing { in the Block" << std::endl;
     }
 }
