@@ -97,10 +97,23 @@ Value* ReturnStmtNode::codegen() {
 Value* WhileStmtNode::codegen() {
     BasicBlock *entry = Builder->GetInsertBlock();
 
-    BasicBlock *while_loop_block = (BasicBlock*)loop_block->codegen();
+    BasicBlock *loop_exit = BasicBlock::Create(*TheContext, "loop_exit", Builder->GetInsertBlock()->getParent());
+    Builder->SetInsertPoint(loop_exit);
+    Builder->CreateRetVoid();
+
     Builder->SetInsertPoint(entry);
 
-    return Builder->CreateCondBr(conditional_expr->codegen(), while_loop_block, entry);
+    BasicBlock *while_loop_block = (BasicBlock*)loop_block->codegen();
+    Builder->CreateRetVoid();
+
+    Builder->SetInsertPoint(entry);
+    BasicBlock *loop_holder = BasicBlock::Create(*TheContext, "loop_holder", Builder->GetInsertBlock()->getParent());
+
+    Builder->CreateBr(loop_holder);
+
+    Builder->SetInsertPoint(loop_holder);
+
+    return Builder->CreateCondBr(conditional_expr->codegen(), while_loop_block, loop_exit);
 }
 
 Value* ForStmtNode::codegen() {
@@ -217,5 +230,9 @@ Value* programCodegen(std::list<DeclNode*> declarations) {
         i->codegen();
         //TheModule->print(llvm::errs(), nullptr);
     }
+
+    // Finish off the function with a return void
+    Builder->CreateRetVoid();
+
     TheModule->print(llvm::errs(), nullptr);
 }

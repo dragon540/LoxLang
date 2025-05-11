@@ -1,6 +1,6 @@
-var xi = 5444 + 43;
+var x1 = 5444 + 43;
 
-if(8 < 5) {
+if(1< 2) {
    var yu = 9;
    var ui = 89;
    //xi = yu + 9;
