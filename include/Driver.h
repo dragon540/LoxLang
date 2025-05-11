@@ -80,10 +80,14 @@ Value* IfStmtNode::codegen() {
     BasicBlock *entry = Builder->GetInsertBlock();
 
     BasicBlock *if_basic_block = (BasicBlock*)if_block->codegen();
+    BasicBlock *else_basic_block = nullptr;
+    if(else_block != nullptr) {
+        else_basic_block = (BasicBlock*)else_block->codegen();
+    }
 
     Builder->SetInsertPoint(entry);
 
-    return Builder->CreateCondBr(if_expr->codegen(), if_basic_block, nullptr);
+    return Builder->CreateCondBr(if_expr->codegen(), if_basic_block, else_basic_block);
 }
 
 Value* ReturnStmtNode::codegen() {

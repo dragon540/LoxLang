@@ -288,12 +288,12 @@ IfStmtNode* Parser::parse_if_stmt_() {
             if(match(TokenType::close_paren)) {
                 node->if_block = parse_block_();
                 if(match(TokenType::else_kw)) {
-                    node->else_expr = parse_expr_stmt_();
-                    if(peek() == TokenType::open_curly) {
-                        node->else_block = parse_block_();
-                    }
+                    std::cout << "else block exists" << std::endl;
+                    node->else_block = parse_block_();
+                    std::cout << "else block parsed" << std::endl;
                 }
                 else {
+                    std::cout << "else block doesn't exist in this case" << std::endl;
                     node->else_expr = nullptr;
                     node->else_block = nullptr;
                 }

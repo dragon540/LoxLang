@@ -4,6 +4,8 @@ if(8 < 5) {
    var yu = 9;
    var ui = 89;
    //xi = yu + 9;
+} else {
+  var ty = 99;
 }
 
 // var str = "ofecjffhf";
