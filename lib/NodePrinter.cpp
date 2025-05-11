@@ -1,5 +1,7 @@
 #include "NodePrinter.h"
 
+unsigned int tab = 0;
+
 void NodePrinter::printDeclaration(DeclNode *node) {
     if(auto var = dynamic_cast<VarDeclNode*>(node)) {
         printVarDecl(var);
@@ -59,7 +61,7 @@ void NodePrinter::printExprStmt(ExprStmtNode *node) {
         } else if (auto unary = dynamic_cast<UnaryNode*>(node)) {
             printUnary(unary);
         } else {
-            std::cerr << "Unknown expression... is it?" << std::endl;
+            std::cerr << "Unknown expression" << std::endl;
         }
 }
 
@@ -126,7 +128,7 @@ void NodePrinter::printGrouping(GroupingNode *node) {
 void NodePrinter::printUnary(UnaryNode *node) {
     std::cout << "( " << static_cast<int>(node->symbol_) << " ";
     printExprStmt(node->expr_);
-    std::cout  << " ) ";
+    std::cout  << " )";
 
 }
 
@@ -161,9 +163,9 @@ void NodePrinter::printNumber(NumberNode *node) {
 }
 
 void NodePrinter::printString(StringNode *node) {
-    std::cout << "( " << node->value_ << " ) ";
+    std::cout << "( " << node->value_ << " )";
 }
 
 void NodePrinter::printIdentifier(IdentifierNode *node) {
-    std::cout << "( " << node->value_ << " ) ";
+    std::cout << "( " << node->value_ << " )";
 }

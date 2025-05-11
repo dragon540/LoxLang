@@ -1,8 +1,9 @@
 var xi = 5444 + 43;
 
-if(8 != 5) {
+if(8 < 5) {
    var yu = 9;
    var ui = 89;
+   //xi = yu + 9;
 }
 
 // var str = "ofecjffhf";

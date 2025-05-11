@@ -44,6 +44,7 @@ Value* VarDeclNode::codegen() {
     }
 
     NamedValues[iden->value_] = Alloca;
+    //std::cout << "var decl done" << std::endl;
     return Alloca;
 }
 
@@ -55,9 +56,16 @@ Value* ClassDeclNode::codegen() {
 }
 
 Value* BlockNode::codegen() {
+    std::cout << "Block codegen" << std::endl;
+    Function *func = Builder->GetInsertBlock()->getParent();
+    BasicBlock *bb = BasicBlock::Create(*TheContext, "block", func);
+    Builder->SetInsertPoint(bb);
     for(auto & i : declarations) {
+        //std::cout << "Inside loop" << std::endl;
         i->codegen();
     }
+    //std::cout << "reached here" << std::endl;
+    return bb;
 }
 
 Value* ParametersNode::codegen() {
@@ -67,13 +75,15 @@ Value* ParametersNode::codegen() {
 }
 
 Value* IfStmtNode::codegen() {
+    //std::cout << "IfStmt codegen" << std::endl;
     Function *func = Builder->GetInsertBlock()->getParent();
     BasicBlock *entry = Builder->GetInsertBlock();
-    BasicBlock *if_basic_block = BasicBlock::Create(*TheContext, "if_basic_block", func);
-    Builder->SetInsertPoint(if_basic_block);
-    if_block->codegen();
+
+    BasicBlock *if_basic_block = (BasicBlock*)if_block->codegen();
+
     Builder->SetInsertPoint(entry);
-    return Builder->CreateCondBr(if_expr->codegen(), if_basic_block, 0);
+
+    return Builder->CreateCondBr(if_expr->codegen(), if_basic_block, nullptr);
 }
 
 Value* ReturnStmtNode::codegen() {
