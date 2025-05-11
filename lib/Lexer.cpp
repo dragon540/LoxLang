@@ -199,10 +199,10 @@ void Lexer::lex() {
 }
 
 void Lexer::printTokenList() {
-    llvm::errs() << "Printing source code: \n" << src_ << "\n";
+    TokenName tn;
     llvm::errs() << "Token list printing\n";
     for (auto &i : token_list) {
-        llvm::outs() << "Token type: " << static_cast<int>(i.type_) << "\n";
+        llvm::outs() << "Token type: " << tn.tokenToNameMap.at(static_cast<int>(i.type_)) << "\n";
         if(i.value_ != "\0") {
             llvm::outs() << "Token value: " << i.value_ << "\n";
         }

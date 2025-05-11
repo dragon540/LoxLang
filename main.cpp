@@ -21,34 +21,40 @@ int main(int argc, char **argv) {
             src += "\n";
         }
         // std::cout << src << std::endl;
+        llvm::errs() << "Printing source code: \n" << src << "\n";
 
-        // Calling lexer
+        // Lexing
         llvm::StringRef source_code(src);
         Lexer lexer(source_code);
-        lexer.printTokenList();
-
-        // Calling Parser
+        // Parsing
         Parser parser(lexer.return_token_list());
         std::list<DeclNode*> declarations = parser.parse();
-        //std::cout << "Number of declarsations: " << declarations.size() << std::endl;
 
-        // Pretty printer
-        NodePrinter np;
-        for(auto & i : declarations) {
-            np.printDeclaration(i);
+        if(argc > 2 && strcmp(argv[2], "--lexer") == 0) {
+            // Printing tokens
+            lexer.printTokenList();
         }
-        std::cout << std::endl;
 
-        std::cout << "Codegen" << std::endl;
-        programCodegen(declarations);
+        if(argc > 2 && strcmp(argv[2], "--ast") == 0) {
+            // Pretty printer
+            NodePrinter np;
+                for(auto & i : declarations) {
+                np.printDeclaration(i);
+            }
+            std::cout << std::endl;
+        }
+        else if(argc == 2) {
+            std::cout << "Code-generation" << std::endl;
+            programCodegen(declarations);
 
-        /***
-        // LLVM IR printing
-        for(auto &i : declarations) {
-            GenerateCode(i);
-        }***/
-
-    } else {
+            /***
+            // LLVM IR printing
+            for(auto &i : declarations) {
+                GenerateCode(i);
+            }***/
+        }
+    }
+    else {
         std::cerr << "Source code not given" << std::endl;
     }
 	return 0;
