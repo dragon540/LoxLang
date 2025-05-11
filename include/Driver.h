@@ -95,7 +95,12 @@ Value* ReturnStmtNode::codegen() {
 }
 
 Value* WhileStmtNode::codegen() {
+    BasicBlock *entry = Builder->GetInsertBlock();
 
+    BasicBlock *while_loop_block = (BasicBlock*)loop_block->codegen();
+    Builder->SetInsertPoint(entry);
+
+    return Builder->CreateCondBr(conditional_expr->codegen(), while_loop_block, entry);
 }
 
 Value* ForStmtNode::codegen() {
