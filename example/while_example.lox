@@ -1,0 +1,6 @@
+var x1 = 5;
+var x2 = 7;
+
+while(1 < 2) {
+   var xi = 90;
+}

@@ -199,7 +199,7 @@ Value* GroupingNode::codegen() {
     return exprStmt->codegen();
 }
 
-void GenerateCode(DeclNode *Root) {
+Value* programCodegen(std::list<DeclNode*> declarations) {
     // Initialize LLVM context and builder
     TheContext = std::make_unique<llvm::LLVMContext>();
     TheModule = std::make_unique<llvm::Module>("my_module", *TheContext);
@@ -213,18 +213,9 @@ void GenerateCode(DeclNode *Root) {
     BasicBlock *entry = BasicBlock::Create(*TheContext, "entry", mainFunc);
     Builder->SetInsertPoint(entry);
 
-    std::cout << "code generation ------ " << std::endl;
-    if (llvm::Value *Val = Root->codegen()) {
-        // Print generated IR
-        //Val->print(llvm::errs());
-        //llvm::errs() << "\n";
-
-        // Finish off the function with a return void
-        Builder->CreateRetVoid();
-
-        TheModule->print(llvm::errs(), nullptr);
+    for(auto &i : declarations) {
+        i->codegen();
+        //TheModule->print(llvm::errs(), nullptr);
     }
-    else {
-        fprintf(stderr, "Code generation failed.\n");
-    }
+    TheModule->print(llvm::errs(), nullptr);
 }

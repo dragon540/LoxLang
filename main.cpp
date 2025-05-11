@@ -39,10 +39,14 @@ int main(int argc, char **argv) {
         }
         std::cout << std::endl;
 
+        std::cout << "Codegen" << std::endl;
+        programCodegen(declarations);
+
+        /***
         // LLVM IR printing
         for(auto &i : declarations) {
             GenerateCode(i);
-        }
+        }***/
 
     } else {
         std::cerr << "Source code not given" << std::endl;
