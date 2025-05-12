@@ -62,6 +62,7 @@ Value* BlockNode::codegen() {
     Builder->SetInsertPoint(bb);
     for(auto & i : declarations) {
         //std::cout << "Inside loop" << std::endl;
+        std::cout << "right now we are here" << std::endl;
         i->codegen();
     }
     //std::cout << "reached here" << std::endl;
@@ -80,9 +81,11 @@ Value* IfStmtNode::codegen() {
     BasicBlock *entry = Builder->GetInsertBlock();
 
     BasicBlock *if_basic_block = (BasicBlock*)if_block->codegen();
+    Builder->CreateRetVoid();
     BasicBlock *else_basic_block = nullptr;
     if(else_block != nullptr) {
         else_basic_block = (BasicBlock*)else_block->codegen();
+        Builder->CreateRetVoid();
     }
 
     Builder->SetInsertPoint(entry);
