@@ -215,6 +215,18 @@ Value* GroupingNode::codegen() {
     return exprStmt->codegen();
 }
 
+Value* AssignStmtNode::codegen() {
+    std::string iden_name = iden->value_;
+
+    if(NamedValues.find(iden_name) == NamedValues.end()) {
+        return ErrorV("Variable not declared before assignment");
+    }
+    else {
+        Value* newValue = exprStmt->codegen();
+        return Builder->CreateStore(newValue, NamedValues[iden_name]);
+    }
+}
+
 Value* programCodegen(std::list<DeclNode*> declarations) {
     // Initialize LLVM context and builder
     TheContext = std::make_unique<llvm::LLVMContext>();

@@ -10,10 +10,12 @@ public:
     void printDeclaration(DeclNode *node);
     void printStatement(StmtNode *node);
     void printExprStmt(ExprStmtNode *node);
+    void printAssignStmt(AssignStmtNode *node);
     void printForStmt(ForStmtNode *node);
     void printIfStmt(IfStmtNode *node);
-    void printPrintStmt(PrintStmtNode *node);
+    void printAssignStmt(PrintStmtNode *node);
     void printReturnStmt(ReturnStmtNode *node);
+    void printPrintStmt(PrintStmtNode* node);
     void printWhileStmt(WhileStmtNode *node);
     void printBlock(BlockNode *node);
     void printLiteral(LiteralNode *node);

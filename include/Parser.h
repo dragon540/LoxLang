@@ -34,6 +34,7 @@ private:
     DeclNode* parse_decl_();
     StmtNode* parse_stmt_();
     ExprStmtNode* parse_expr_stmt_();
+    AssignStmtNode* parse_assign_stmt_();
     ForStmtNode* parse_for_stmt_();
     IfStmtNode* parse_if_stmt_();
     PrintStmtNode* parse_print_stmt_();

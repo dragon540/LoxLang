@@ -57,6 +57,15 @@ public:
     std::string value_;
 };
 
+class AssignStmtNode : public StmtNode {
+public:
+    AssignStmtNode() {}
+    virtual Value *codegen() override;
+
+    IdentifierNode *iden;
+    ExprStmtNode *exprStmt;
+};
+
 class ParametersNode {
 public:
     ParametersNode() {}

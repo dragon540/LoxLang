@@ -1,4 +1,4 @@
-# LoxLang using MLIR and LLVM
+ # LoxLang using MLIR and LLVM
 
 ## How to build:
 
@@ -20,6 +20,7 @@
                 | Statement
                   
 3. Statement -> ExprStmt
+              | AssignStmt
               | ForStmt
               | IfStmt
               | PrintStmt
@@ -32,46 +33,48 @@
              | Binary
              | Grouping
              
-5. ForStmt -> FOR OPEN_PAREN VarDecl SEMICOLON ExprStmt SEMICOLON 
+5. AssignStmt -> Identifier EQUAL ExprStmt SEMICOLON
+             
+6. ForStmt -> FOR OPEN_PAREN VarDecl SEMICOLON ExprStmt SEMICOLON 
               ExprStmt CLOSE_PAREN Block
          
-6. IfStmt -> IF OPEN_PAREN ExprStmt CLOSE_PAREN Block
+7. IfStmt -> IF OPEN_PAREN ExprStmt CLOSE_PAREN Block
            | IF OPEN_PAREN ExprStmt CLOSE_PAREN Block ELSE Block
 
-7. PrintStmt -> PRINT OPEN_PAREN ExprStmt CLOSE_PAREN SEMICOLON 
+8. PrintStmt -> PRINT OPEN_PAREN ExprStmt CLOSE_PAREN SEMICOLON 
 
-8. ReturnStmt -> RETURN SEMICOLON
+9. ReturnStmt -> RETURN SEMICOLON
                | RETURN ExprStmt SEMICOLON
 
-9. WhileStmt -> WHILE OPEN_PAREN ExprStmt CLOSE_PAREN Block
+10. WhileStmt -> WHILE OPEN_PAREN ExprStmt CLOSE_PAREN Block
 
-10. Block -> OPEN_CURLY Statement* CLOSE_CURLY
+11. Block -> OPEN_CURLY Statement* CLOSE_CURLY
                 
-6. Literal -> NUMBER | STRING | "true" | "false" | "nil" ;
+12. Literal -> NUMBER | STRING | "true" | "false" | "nil" ;
 
-7. Grouping -> "(" ExprStmt ")" ;
+13. Grouping -> "(" ExprStmt ")" ;
 
-8. Unary -> ( "-" | "!" ) ExprStmt ;
+14. Unary -> ( "-" | "!" ) ExprStmt ;
 
-9. Binary -> ExprStmt Operator ExprStmt ;
+15. Binary -> ExprStmt Operator ExprStmt ;
 
-10. Operator -> "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" ;
+16. Operator -> "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" ;
 
-11. VarDecl -> VAR Identifier SEMICOLON
+17. VarDecl -> VAR Identifier SEMICOLON
              | VAR Identifier EQUAL ExprStmt SEMICOLON
                
-12. FuncDecl -> FUN Function
+18. FuncDecl -> FUN Function
 
-13. ClassDecl -> CLASS Identifier OPEN_CURLY Function* CLOSE_CURLY SEMICOLON
+19. ClassDecl -> CLASS Identifier OPEN_CURLY Function* CLOSE_CURLY SEMICOLON
 
-14. Function -> Identifier ( ) Block;
+20. Function -> Identifier ( ) Block;
               | Identifier ( Parameters ) Block
                 
-15. Parameters -> Identifier
+21. Parameters -> Identifier
                 | Identifier , Identifier+
                 
-16. VAR -> "var"
-17. PRINT -> "print"
-18. CLASS -> "class"
-19. RETURN -> "return"
+22. VAR -> "var"
+23. PRINT -> "print"
+24. CLASS -> "class"
+25. RETURN -> "return"
 

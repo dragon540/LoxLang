@@ -95,6 +95,10 @@ StmtNode* Parser::parse_stmt_() {
     else if(peek() == TokenType::while_kw) {
         return parse_while_stmt_();
     }
+    else if(peek() == TokenType::identifier) {
+        std::cout << "trying to parse assignment" << std::endl;
+        return parse_assign_stmt_();
+    }
     return parse_expr_stmt_();
 }
 
@@ -255,6 +259,29 @@ ExprStmtNode* Parser::parse_expr_stmt_() {
         break;
     }
     return result;
+}
+
+AssignStmtNode* Parser::parse_assign_stmt_() {
+    AssignStmtNode *node = new AssignStmtNode;
+
+    node->iden = parse_identifier(consume().value_);
+    std::cout << "iden parsed haah" << node->iden->value_ <<  std::endl;
+
+    if(match(TokenType::equal_assignment)) {
+        node->exprStmt = parse_expr_stmt_();
+        std::cout << "expr parsed" << std::endl;
+        if(peek() == TokenType::semicolon) {
+            consume();
+        }
+        else {
+            std::cerr << "Missing semicolon" << std::endl;
+        }
+    }
+    else {
+        std::cerr << "Missing \'=\' in assignment statement" << std::endl;
+    }
+
+    return node;
 }
 
 // TODO: Error handling

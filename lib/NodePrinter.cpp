@@ -24,6 +24,9 @@ void NodePrinter::printStatement(StmtNode *node) {
     if(auto expr = dynamic_cast<ExprStmtNode*>(node)) {
         printExprStmt(expr);
     }
+    else if(auto assignStmt = dynamic_cast<AssignStmtNode*>(node)) {
+        printAssignStmt(assignStmt);
+    }
     else if(auto forStmt = dynamic_cast<ForStmtNode*>(node)) {
         printForStmt(forStmt);
     }
@@ -65,6 +68,13 @@ void NodePrinter::printExprStmt(ExprStmtNode *node) {
         }
 }
 
+void NodePrinter::printAssignStmt(AssignStmtNode *node) {
+    std::cout << "( ";
+    printIdentifier(node->iden);
+    printExprStmt(node->exprStmt);
+    std::cout << " )";
+}
+
 void NodePrinter::printForStmt(ForStmtNode *node) {
     std::cout << "( ";
     printVarDecl(node->init);
@@ -87,7 +97,7 @@ void NodePrinter::printIfStmt(IfStmtNode *node) {
 }
 
 void NodePrinter::printPrintStmt(PrintStmtNode *node) {
-
+    std::cout << "for now just print" << std::endl;
 }
 
 void NodePrinter::printReturnStmt(ReturnStmtNode *node) {
