@@ -123,10 +123,12 @@ Value* ForStmtNode::codegen() {
 
 }
 
+// not accurate
 Value* PrintStmtNode::codegen() {
     return ConstantFP::get(*TheContext, APFloat(1.5));
 }
 
+// not accurate
 Value* ExprStmtNode::codegen() {
     return ConstantInt::get(*TheContext, APInt(32, 53));
 }
@@ -136,10 +138,12 @@ Value* NumberNode::codegen() {
     return ConstantInt::get(*TheContext, APInt(32, value_));
 }
 
+// not accurate
 Value* StringNode::codegen() {
     return ConstantFP::get(*TheContext, APFloat(1.5));
 }
 
+// not accurate
 Value* LiteralNode::codegen() {
     return ConstantFP::get(*TheContext, APFloat(1.5));
 }
@@ -195,19 +199,18 @@ Value* UnaryNode::codegen() {
 
 // Working:
 // codegen for variable allocation, only allocates space in memory for the variable
-// TODO: currently all IR generations are carried out in seperate module, change it.
 Value* IdentifierNode::codegen() {
     if(Builder->GetInsertBlock() == nullptr) {
         std::cout << "not inside any basic block" << std::endl;
     }
     if(NamedValues.find(value_) != NamedValues.end()) {
-        AllocaInst *Alloca = Builder->CreateAlloca(Type::getInt32Ty(*TheContext), nullptr, value_.c_str());
-        NamedValues[value_] = Alloca;
-        return Alloca;
+        //AllocaInst *Alloca = Builder->CreateAlloca(Type::getInt32Ty(*TheContext), nullptr, value_.c_str());
+        //NamedValues[value_] = Alloca;
+        //return Alloca;
+        return NamedValues[value_];
     }
     else {
-        std::string msg = value_ + " " + "is already declared";
-        return ErrorV(msg);
+        return ErrorV("Variable not defined");
     }
 }
 

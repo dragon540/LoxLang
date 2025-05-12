@@ -237,6 +237,20 @@ ExprStmtNode* Parser::parse_expr_stmt_() {
         case TokenType::nil:
         break;
 
+        case TokenType::identifier:
+            std::cout << "identifier token identified" << std::endl;
+            if(peek() == TokenType::semicolon || peek() == TokenType::close_paren) {
+                result = parse_identifier(tok.value_);
+            }
+            else if(peek() == TokenType::plus || peek() == TokenType::minus ||
+                    peek() == TokenType::mul || peek() == TokenType::less_than ||
+                    peek() == TokenType::less_than_equal || peek() == TokenType::more_than ||
+                    peek() ==  TokenType::more_than_equal || peek() == TokenType::equal_comparison ||
+                    peek() ==  TokenType::not_equal_comparison) {
+                result = parse_binary_(parse_identifier(tok.value_));
+            }
+        break;
+
         // Unary
         case TokenType::minus:
         case TokenType::not_operator:

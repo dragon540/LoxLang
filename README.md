@@ -29,6 +29,7 @@
               | Block
                 
 4. ExprStmt -> Literal
+             | Identifier
              | Unary
              | Binary
              | Grouping
