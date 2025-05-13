@@ -3,11 +3,13 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
+#include "llvm/IR/Value.h"
 #include "Node.h"
 
 #include <iostream>
 #include <map>
 #include <typeinfo>
+#include <string>
 
 static std::unique_ptr<LLVMContext> TheContext;
 static std::unique_ptr<Module> TheModule;
@@ -87,6 +89,11 @@ Value* IfStmtNode::codegen() {
         else_basic_block = (BasicBlock*)else_block->codegen();
         Builder->CreateRetVoid();
     }
+    else {
+        else_basic_block = BasicBlock::Create(*TheContext, "exit_block", Builder->GetInsertBlock()->getParent());
+        Builder->SetInsertPoint(else_basic_block);
+        Builder->CreateRetVoid();
+    }
 
     Builder->SetInsertPoint(entry);
 
@@ -152,29 +159,59 @@ Value* BinaryNode::codegen() {
     //std::cout << "we are in binary codegen" << std::endl;
     Value* Left = left_->codegen();
     Value* Right = right_->codegen();
+
+    Value *LHS, *RHS;
+
+    int type = -1;
+    if(Left->getType()->Type::isIntegerTy() && Right->getType()->Type::isIntegerTy()) {
+        //std::cout << "oneeee" << std::endl;
+        LHS = Left;
+        RHS = Right;
+    }
+    else if(Left->getType()->Type::isIntegerTy() && !Right->getType()->Type::isIntegerTy()) {
+        //std::cout << "twooooo" << std::endl;
+        LHS = Left;
+        RHS = Builder->CreateLoad(Type::getInt32Ty(*TheContext), NamedValues[Right->getName().str()]);
+
+        LHS = Builder->CreateZExtOrTrunc(LHS, RHS->getType());
+    }
+    else if(Right->getType()->Type::isIntegerTy() && !Left->getType()->Type::isIntegerTy()) {
+        //std::cout << "threee" << std::endl;
+        LHS = Builder->CreateLoad(Type::getInt32Ty(*TheContext), NamedValues[Left->getName().str()]);
+        RHS = Right;
+
+        RHS = Builder->CreateZExtOrTrunc(RHS, LHS->getType());
+    }
+    else if(!Left->getType()->Type::isIntegerTy() && !Right->getType()->Type::isIntegerTy()) {
+        //std::cout << "fouuuuur" << std::endl;
+        LHS = Builder->CreateLoad(Type::getInt32Ty(*TheContext), NamedValues[Left->getName().str()]);
+        RHS = Builder->CreateLoad(Type::getInt32Ty(*TheContext), NamedValues[Right->getName().str()]);
+    }
+
     if(!Builder) {
         std::cerr << "Something wrong with builder in BinaryNode::codegen()" << std::endl;
     }
-    if(Left != 0 && Right != 0) {
+
+    if(Left != nullptr && Right != nullptr) {
         switch(op_) {
         case TokenType::plus:
-            return Builder->CreateAdd(Left, Right, "addtmp");
+            return Builder->CreateAdd(LHS, RHS);
         case TokenType::minus:
-            return Builder->CreateSub(Left, Right, "subtmp");
+            return Builder->CreateSub(LHS, RHS);
         case TokenType::mul:
-            return Builder->CreateMul(Left, Right, "multmp");
+            return Builder->CreateMul(LHS, RHS);
         case TokenType::less_than:
-            return Builder->CreateICmpULT(Left, Right);
+            return Builder->CreateICmpULT(LHS, RHS);
         case TokenType::less_than_equal:
-            return Builder->CreateICmpULE(Left, Right);
+            return Builder->CreateICmpULE(LHS, RHS);
         case TokenType::more_than:
-            return Builder->CreateICmpUGT(Left, Right);
+            return Builder->CreateICmpUGT(LHS, RHS);
         case TokenType::more_than_equal:
-            return Builder->CreateICmpUGE(Left, Right);
+            return Builder->CreateICmpUGE(LHS, RHS);
         case TokenType::equal_comparison:
-            return Builder->CreateICmpEQ(Left, Right);
+            return Builder->CreateICmpEQ(LHS, RHS);
         case TokenType::not_equal_comparison:
-            return Builder->CreateICmpNE(Left, Right);
+            return Builder->CreateICmpNE(LHS, RHS);
         default:
             return ErrorV("Invalid binary operator\n");
         }
@@ -204,9 +241,6 @@ Value* IdentifierNode::codegen() {
         std::cout << "not inside any basic block" << std::endl;
     }
     if(NamedValues.find(value_) != NamedValues.end()) {
-        //AllocaInst *Alloca = Builder->CreateAlloca(Type::getInt32Ty(*TheContext), nullptr, value_.c_str());
-        //NamedValues[value_] = Alloca;
-        //return Alloca;
         return NamedValues[value_];
     }
     else {
@@ -225,6 +259,7 @@ Value* AssignStmtNode::codegen() {
         return ErrorV("Variable not declared before assignment");
     }
     else {
+        std::cout << "in assign codegen" << iden_name << std::endl;
         Value* newValue = exprStmt->codegen();
         return Builder->CreateStore(newValue, NamedValues[iden_name]);
     }
@@ -246,11 +281,13 @@ Value* programCodegen(std::list<DeclNode*> declarations) {
 
     for(auto &i : declarations) {
         i->codegen();
-        //TheModule->print(llvm::errs(), nullptr);
     }
 
-    // Finish off the function with a return void
-    Builder->CreateRetVoid();
+    // Finish off the function with a return void if a terminator is not already present
+    llvm::Instruction* term = entry->getTerminator();
+    if(term == nullptr) {
+        Builder->CreateRetVoid();
+    }
 
     TheModule->print(llvm::errs(), nullptr);
 }

@@ -1,0 +1,11 @@
+var input = 5;
+
+var res = 1;
+
+var tmp = 1;
+
+while(input > 1) {
+	res = res * input;
+	input = input - 1;
+}
+

@@ -1,8 +1,10 @@
-var x1 = 5444 + 43;
+var x1 = 54;
+var x2 = 23;
 
-if(1< 2) {
+if(x2 < x1) {
    var yu = 9;
    var ui = 89;
+
    //xi = yu + 9;
 } else {
   var ty = 99;
