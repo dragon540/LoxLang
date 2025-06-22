@@ -16,7 +16,7 @@ public:
     Parser(std::vector<Token> tokens);
     ExprStmtNode *root;
 
-    std::list<DeclNode*> parse();
+    std::list<std::shared_ptr<DeclNode>> parse();
 
 private:
     std::vector<Token> tokens_;
@@ -31,26 +31,26 @@ private:
     void parseToken();
 
     //std::list<StmtNode*> parse();
-    DeclNode* parse_decl_();
-    StmtNode* parse_stmt_();
-    ExprStmtNode* parse_expr_stmt_();
-    AssignStmtNode* parse_assign_stmt_();
-    ForStmtNode* parse_for_stmt_();
-    IfStmtNode* parse_if_stmt_();
-    PrintStmtNode* parse_print_stmt_();
-    ReturnStmtNode* parse_return_stmt_();
-    WhileStmtNode* parse_while_stmt_();
-    BlockNode* parse_block_();
-    LiteralNode* parse_literal_();
-    GroupingNode* parse_grouping_();
-    UnaryNode* parse_unary_(TokenType t);
-    BinaryNode* parse_binary_(ExprStmtNode *current);
-    VarDeclNode* parse_var_decl_();
-    FuncDeclNode* parse_func_decl_();
-    ClassDeclNode* parse_class_decl_();
-    ParametersNode* parse_params_();
+    std::shared_ptr<DeclNode> parse_decl_();
+    std::shared_ptr<StmtNode> parse_stmt_();
+    std::shared_ptr<ExprStmtNode> parse_expr_stmt_();
+    std::shared_ptr<AssignStmtNode> parse_assign_stmt_();
+    std::shared_ptr<ForStmtNode> parse_for_stmt_();
+    std::shared_ptr<IfStmtNode> parse_if_stmt_();
+    std::shared_ptr<PrintStmtNode> parse_print_stmt_();
+    std::shared_ptr<ReturnStmtNode> parse_return_stmt_();
+    std::shared_ptr<WhileStmtNode> parse_while_stmt_();
+    std::shared_ptr<BlockNode> parse_block_();
+    std::shared_ptr<LiteralNode> parse_literal_();
+    std::shared_ptr<GroupingNode> parse_grouping_();
+    std::shared_ptr<UnaryNode> parse_unary_(TokenType t);
+    std::shared_ptr<BinaryNode> parse_binary_(std::shared_ptr<ExprStmtNode> current);
+    std::shared_ptr<VarDeclNode> parse_var_decl_();
+    std::shared_ptr<FuncDeclNode> parse_func_decl_();
+    std::shared_ptr<ClassDeclNode> parse_class_decl_();
+    std::shared_ptr<ParametersNode> parse_params_();
     void parse_operator_();
-    NumberNode* parse_number_(int num);
-    StringNode* parse_string(std::string str);
-    IdentifierNode* parse_identifier(std::string str);
+    std::shared_ptr<NumberNode> parse_number_(int num);
+    std::shared_ptr<StringNode> parse_string(std::string str);
+    std::shared_ptr<IdentifierNode> parse_identifier(std::string str);
 };

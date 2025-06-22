@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
         Lexer lexer(source_code);
         // Parsing
         Parser parser(lexer.return_token_list());
-        std::list<DeclNode*> declarations = parser.parse();
+        std::list<std::shared_ptr<DeclNode>> declarations = parser.parse();
 
         if(argc > 2 && strcmp(argv[2], "--lexer") == 0) {
             // Printing tokens

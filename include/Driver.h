@@ -265,7 +265,7 @@ Value* AssignStmtNode::codegen() {
     }
 }
 
-Value* programCodegen(std::list<DeclNode*> declarations) {
+Value* programCodegen(std::list<std::shared_ptr<DeclNode>> declarations) {
     // Initialize LLVM context and builder
     TheContext = std::make_unique<llvm::LLVMContext>();
     TheModule = std::make_unique<llvm::Module>("my_module", *TheContext);

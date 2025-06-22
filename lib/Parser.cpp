@@ -52,8 +52,8 @@ void Parser::parseToken() {
 }
 **/
 
-std::list<DeclNode*> Parser::parse() {
-    std::list<DeclNode*> declarations;
+std::list<std::shared_ptr<DeclNode>> Parser::parse() {
+    std::list<std::shared_ptr<DeclNode>> declarations;
     while(!isAtEnd()) {
         std::cout << "parser here" << std::endl;
         declarations.push_back(parse_decl_());
@@ -62,8 +62,8 @@ std::list<DeclNode*> Parser::parse() {
     return declarations;
 }
 
-DeclNode* Parser::parse_decl_() {
-    DeclNode *decl = nullptr;
+std::shared_ptr<DeclNode> Parser::parse_decl_() {
+    std::shared_ptr<DeclNode> decl(nullptr);
     if(peek() == TokenType::var_kw) {
         decl = parse_var_decl_();
     }
@@ -79,7 +79,7 @@ DeclNode* Parser::parse_decl_() {
     return decl;
 }
 
-StmtNode* Parser::parse_stmt_() {
+std::shared_ptr<StmtNode> Parser::parse_stmt_() {
     if(peek() == TokenType::for_kw) {
         return parse_for_stmt_();
     }
@@ -102,10 +102,11 @@ StmtNode* Parser::parse_stmt_() {
     return parse_expr_stmt_();
 }
 
-VarDeclNode* Parser::parse_var_decl_() {
-    IdentifierNode *iden = nullptr;
-    ExprStmtNode *expr = nullptr;
-    VarDeclNode *varDecl = nullptr;
+std::shared_ptr<VarDeclNode> Parser::parse_var_decl_() {
+    std::shared_ptr<IdentifierNode> iden(nullptr);
+    std::shared_ptr<ExprStmtNode> expr(nullptr);
+    std::shared_ptr<VarDeclNode> varDecl(nullptr);
+    //VarDeclNode *varDecl = nullptr;
 
     if(match(TokenType::var_kw)) {
         if(peek() == TokenType::identifier) {
@@ -115,19 +116,20 @@ VarDeclNode* Parser::parse_var_decl_() {
                 expr = parse_expr_stmt_();
                 if(match(TokenType::semicolon)) {
                     if(expr) {
-                        varDecl = new VarDeclNode(iden, expr);
+                        varDecl = std::make_shared<VarDeclNode>(iden, expr);
+                        //varDecl = new VarDeclNode(iden, expr);
                     } else {
                         std::cerr << "Error in right side expression" << std::endl;
                     }
                 }
                 else {
                     std::cerr << "Expected ; after expression" << std::endl;
-                    delete expr;
                 }
             }
             else {
                 if(match(TokenType::semicolon)) {
-                    varDecl = new VarDeclNode(iden, 0);
+                    varDecl = std::make_shared<VarDeclNode>(iden, nullptr);
+                    //varDecl = new VarDeclNode(iden, 0);
                 }
             }
         }
@@ -135,12 +137,12 @@ VarDeclNode* Parser::parse_var_decl_() {
     return varDecl;
 }
 
-PrintStmtNode* Parser::parse_print_stmt_() {
-    PrintStmtNode* print_stmt;
+std::shared_ptr<PrintStmtNode> Parser::parse_print_stmt_() {
+    std::shared_ptr<PrintStmtNode> print_stmt;
     if(match(TokenType::print_kw)) {
         if(match(TokenType::open_paren)) {
-            ExprStmtNode *expr = parse_expr_stmt_();
-            print_stmt = new PrintStmtNode(expr);
+            std::shared_ptr<ExprStmtNode> expr = parse_expr_stmt_();
+            print_stmt = std::make_shared<PrintStmtNode>(expr);
             if(match(TokenType::close_paren)) {
                 if(match(TokenType::semicolon)) {
                     return print_stmt;
@@ -159,8 +161,8 @@ PrintStmtNode* Parser::parse_print_stmt_() {
     }
 }
 
-ReturnStmtNode* Parser::parse_return_stmt_() {
-    ReturnStmtNode *node = new ReturnStmtNode;
+std::shared_ptr<ReturnStmtNode> Parser::parse_return_stmt_() {
+    std::shared_ptr<ReturnStmtNode> node = std::make_shared<ReturnStmtNode>();
     if(match(TokenType::return_kw)) {
         if(match(TokenType::semicolon)) {
             node->return_void = true;
@@ -179,42 +181,42 @@ ReturnStmtNode* Parser::parse_return_stmt_() {
     }
 }
 
-LiteralNode* Parser::parse_literal_() {
+std::shared_ptr<LiteralNode> Parser::parse_literal_() {
 
 }
 
-GroupingNode* Parser::parse_grouping_() {
-    ExprStmtNode *node = parse_expr_stmt_();
+std::shared_ptr<GroupingNode> Parser::parse_grouping_() {
+    std::shared_ptr<ExprStmtNode> node = parse_expr_stmt_();
     Token next_tok = consume();
     if(next_tok.type_ != TokenType::close_paren) {
         std::cerr << "Missing )\n";
     }
-    return new GroupingNode(node);
+    return std::make_shared<GroupingNode>(node);
 }
 
-UnaryNode* Parser::parse_unary_(TokenType t) {
-    ExprStmtNode *node = parse_expr_stmt_();
+std::shared_ptr<UnaryNode> Parser::parse_unary_(TokenType t) {
+    std::shared_ptr<ExprStmtNode> node = parse_expr_stmt_();
     if(t == TokenType::minus) {
-        return new UnaryNode(TokenType::minus, node);
+        return std::make_shared<UnaryNode>(TokenType::minus, node);
     }
     else if(t == TokenType::not_operator) {
-        return new UnaryNode(TokenType::not_operator, node);
+        return std::make_shared<UnaryNode>(TokenType::not_operator, node);
     }
 }
 
-BinaryNode* Parser::parse_binary_(ExprStmtNode *current) {
+std::shared_ptr<BinaryNode> Parser::parse_binary_(std::shared_ptr<ExprStmtNode> current) {
     //ExprStmtNode *left_node = parse_expr_stmt_();
     Token op = consume();
-    ExprStmtNode *right_node = parse_expr_stmt_();
+    std::shared_ptr<ExprStmtNode> right_node = parse_expr_stmt_();
 
-    return new BinaryNode(current, right_node, op.type_);
+    return std::make_shared<BinaryNode>(current, right_node, op.type_);
 }
 
-ExprStmtNode* Parser::parse_expr_stmt_() {
+std::shared_ptr<ExprStmtNode> Parser::parse_expr_stmt_() {
     //std::cout << "before, consuming, peeking - " << static_cast<int>(peek()) << std::endl;
     Token tok = consume();
     //std::cout << "after consuming, peeking - " << static_cast<int>(peek()) << std::endl;
-    ExprStmtNode* result = nullptr;
+    std::shared_ptr<ExprStmtNode> result(nullptr);
     switch(tok.type_) {
         // Literal
         case TokenType::int_numeric:
@@ -275,8 +277,8 @@ ExprStmtNode* Parser::parse_expr_stmt_() {
     return result;
 }
 
-AssignStmtNode* Parser::parse_assign_stmt_() {
-    AssignStmtNode *node = new AssignStmtNode;
+std::shared_ptr<AssignStmtNode> Parser::parse_assign_stmt_() {
+    std::shared_ptr<AssignStmtNode> node = std::make_shared<AssignStmtNode>();
 
     node->iden = parse_identifier(consume().value_);
     std::cout << "iden parsed haah" << node->iden->value_ <<  std::endl;
@@ -299,8 +301,8 @@ AssignStmtNode* Parser::parse_assign_stmt_() {
 }
 
 // TODO: Error handling
-ForStmtNode* Parser::parse_for_stmt_() {
-    ForStmtNode *node = new ForStmtNode;
+std::shared_ptr<ForStmtNode> Parser::parse_for_stmt_() {
+    std::shared_ptr<ForStmtNode> node = std::make_shared<ForStmtNode>();
     if(match(TokenType::for_kw)) {
         if(match(TokenType::open_paren)) {
             node->init = parse_var_decl_();
@@ -321,8 +323,8 @@ ForStmtNode* Parser::parse_for_stmt_() {
 }
 
 // TODO: Error handling
-IfStmtNode* Parser::parse_if_stmt_() {
-    IfStmtNode *node = new IfStmtNode;
+std::shared_ptr<IfStmtNode> Parser::parse_if_stmt_() {
+    std::shared_ptr<IfStmtNode> node = std::make_shared<IfStmtNode>();
     if(match(TokenType::if_kw)) {
         if(match(TokenType::open_paren)) {
             node->if_expr = parse_expr_stmt_();
@@ -345,8 +347,8 @@ IfStmtNode* Parser::parse_if_stmt_() {
 }
 
 // TODO: Error handling
-WhileStmtNode* Parser::parse_while_stmt_() {
-    WhileStmtNode *node = new WhileStmtNode;
+std::shared_ptr<WhileStmtNode> Parser::parse_while_stmt_() {
+    std::shared_ptr<WhileStmtNode> node = std::make_shared<WhileStmtNode>();
     if(match(TokenType::while_kw)) {
         if(match(TokenType::open_paren)) {
             node->conditional_expr = parse_expr_stmt_();
@@ -359,8 +361,8 @@ WhileStmtNode* Parser::parse_while_stmt_() {
 }
 
 // TODO: Error handling and testing
-FuncDeclNode* Parser::parse_func_decl_() {
-    FuncDeclNode *node = new FuncDeclNode;
+std::shared_ptr<FuncDeclNode> Parser::parse_func_decl_() {
+    std::shared_ptr<FuncDeclNode> node = std::make_shared<FuncDeclNode>();
     if(match(TokenType::func_kw)) {
         if(peek() == TokenType::identifier) {
             Token t = consume();
@@ -388,17 +390,17 @@ FuncDeclNode* Parser::parse_func_decl_() {
     return node;
 }
 
-ClassDeclNode* Parser::parse_class_decl_() {
+std::shared_ptr<ClassDeclNode> Parser::parse_class_decl_() {
 
 }
 
-ParametersNode* Parser::parse_params_() {
+std::shared_ptr<ParametersNode> Parser::parse_params_() {
 
 }
 
-BlockNode* Parser::parse_block_() {
+std::shared_ptr<BlockNode> Parser::parse_block_() {
     std::cout << "parsing block" << std::endl;
-    BlockNode *node = new BlockNode;
+    std::shared_ptr<BlockNode> node = std::make_shared<BlockNode>();
 
     if(match(TokenType::open_curly)) {
         while(peek() != TokenType::close_curly) {
@@ -419,18 +421,18 @@ BlockNode* Parser::parse_block_() {
 }
 
 
-NumberNode* Parser::parse_number_(int num) {
-    NumberNode* node = new NumberNode(num);
+std::shared_ptr<NumberNode> Parser::parse_number_(int num) {
+    std::shared_ptr<NumberNode> node = std::make_shared<NumberNode>(num);
     return node;
 }
 
-StringNode* Parser::parse_string(std::string str) {
-    StringNode* node = new StringNode(str);
+std::shared_ptr<StringNode> Parser::parse_string(std::string str) {
+    std::shared_ptr<StringNode> node = std::make_shared<StringNode>(str);
     return node;
 }
 
-IdentifierNode* Parser::parse_identifier(std::string str) {
-    IdentifierNode* node = new IdentifierNode(str);
+std::shared_ptr<IdentifierNode> Parser::parse_identifier(std::string str) {
+    std::shared_ptr<IdentifierNode> node = std::make_shared<IdentifierNode>(str);
     return node;
 }
 

@@ -38,14 +38,14 @@ public:
     ExprStmtNode() {}
     virtual Value *codegen() override;
 
-    ExprStmtNode *exprStmt;
+    std::shared_ptr<ExprStmtNode> exprStmt;
 };
 
 class BlockNode {
 public:
     BlockNode() {}
     virtual Value *codegen();
-    std::vector<DeclNode*> declarations;
+    std::vector<std::shared_ptr<DeclNode>> declarations;
 };
 
 class IdentifierNode : public ExprStmtNode {
@@ -62,8 +62,8 @@ public:
     AssignStmtNode() {}
     virtual Value *codegen() override;
 
-    IdentifierNode *iden;
-    ExprStmtNode *exprStmt;
+    std::shared_ptr<IdentifierNode> iden;
+    std::shared_ptr<ExprStmtNode> exprStmt;
 };
 
 class ParametersNode {
@@ -71,7 +71,7 @@ public:
     ParametersNode() {}
     virtual Value *codegen();
 
-    std::vector<IdentifierNode*> identifiers;
+    std::vector<std::shared_ptr<IdentifierNode>> identifiers;
 };
 
 class IfStmtNode : public StmtNode {
@@ -79,19 +79,19 @@ public:
     IfStmtNode() {}
     virtual Value *codegen() override;
 
-    ExprStmtNode *if_expr;
-    ExprStmtNode *else_expr;
-    BlockNode    *if_block;
-    BlockNode    *else_block;
+    std::shared_ptr<ExprStmtNode> if_expr;
+    std::shared_ptr<ExprStmtNode> else_expr;
+    std::shared_ptr<BlockNode>    if_block;
+    std::shared_ptr<BlockNode>    else_block;
 };
 
 class PrintStmtNode : public StmtNode {
 public:
-    PrintStmtNode(ExprStmtNode *expr) :
+    PrintStmtNode(std::shared_ptr<ExprStmtNode> expr) :
         exprStmt(expr) {}
     virtual Value *codegen() override;
 
-    ExprStmtNode *exprStmt;
+    std::shared_ptr<ExprStmtNode> exprStmt;
 };
 
 class ReturnStmtNode : public StmtNode {
@@ -105,7 +105,7 @@ public:
 
     // this flag indicates if return statement returns any expression or not
     bool return_void;
-    ExprStmtNode *ret_expr;
+    std::shared_ptr<ExprStmtNode> ret_expr;
 };
 
 class WhileStmtNode : public StmtNode {
@@ -113,8 +113,8 @@ public:
     WhileStmtNode() {}
     virtual Value *codegen();
 
-    ExprStmtNode *conditional_expr;
-    BlockNode    *loop_block;
+    std::shared_ptr<ExprStmtNode> conditional_expr;
+    std::shared_ptr<BlockNode>    loop_block;
 };
 
 class NumberNode : public ExprStmtNode {
@@ -137,53 +137,53 @@ public:
 
 class LiteralNode : public ExprStmtNode {
 public:
-    LiteralNode(ExprStmtNode *node) :
+    LiteralNode(std::shared_ptr<ExprStmtNode> node) :
         node(node) {}
 
     Value *codegen() override;
-    ExprStmtNode *node;
+    std::shared_ptr<ExprStmtNode> node;
 };
 
 // identifierNode below this line -
 
 class UnaryNode : public ExprStmtNode {
 public:
-    UnaryNode(TokenType symbol, ExprStmtNode* expr) :
+    UnaryNode(TokenType symbol, std::shared_ptr<ExprStmtNode> expr) :
         symbol_(symbol), expr_(expr) {}
 
     Value *codegen() override;
     TokenType symbol_;
-    ExprStmtNode *expr_;
+    std::shared_ptr<ExprStmtNode> expr_;
 };
 
 class BinaryNode : public ExprStmtNode {
 public:
-    BinaryNode(ExprStmtNode* left, ExprStmtNode* right, TokenType op) :
+    BinaryNode(std::shared_ptr<ExprStmtNode> left, std::shared_ptr<ExprStmtNode> right, TokenType op) :
         left_(left), right_(right), op_(op) {}
 
     Value *codegen() override;
-    ExprStmtNode *left_;
-    ExprStmtNode *right_;
+    std::shared_ptr<ExprStmtNode> left_;
+    std::shared_ptr<ExprStmtNode> right_;
     TokenType op_;
 };
 
 class GroupingNode : public ExprStmtNode {
 public:
-    GroupingNode(ExprStmtNode *expr) :
+    GroupingNode(std::shared_ptr<ExprStmtNode> expr) :
         expr_(expr) {}
 
     Value *codegen() override;
-    ExprStmtNode *expr_;
+    std::shared_ptr<ExprStmtNode> expr_;
 };
 
 class VarDeclNode : public DeclNode {
 public:
-    VarDeclNode(IdentifierNode *iden, ExprStmtNode *expr) :
+    VarDeclNode(std::shared_ptr<IdentifierNode> iden, std::shared_ptr<ExprStmtNode> expr) :
         iden(iden),
         expr(expr) {}
     virtual Value *codegen();
-    IdentifierNode *iden;
-    ExprStmtNode *expr;
+    std::shared_ptr<IdentifierNode> iden;
+    std::shared_ptr<ExprStmtNode> expr;
 };
 
 class FuncDeclNode : public DeclNode {
@@ -192,9 +192,9 @@ public:
     virtual Value *codegen();
 
     bool empty_param;
-    IdentifierNode *func_iden;
-    ParametersNode *params;
-    BlockNode      *func_block;
+    std::shared_ptr<IdentifierNode> func_iden;
+    std::shared_ptr<ParametersNode> params;
+    std::shared_ptr<BlockNode>      func_block;
 };
 
 class ClassDeclNode : public DeclNode {
@@ -210,8 +210,8 @@ public:
     ForStmtNode() {}
     virtual Value *codegen() override;
 
-    VarDeclNode  *init;
-    ExprStmtNode *condition;
-    ExprStmtNode *update;
-    BlockNode    *loop_block;
+    std::shared_ptr<VarDeclNode>  init;
+    std::shared_ptr<ExprStmtNode> condition;
+    std::shared_ptr<ExprStmtNode> update;
+    std::shared_ptr<BlockNode>    loop_block;
 };
